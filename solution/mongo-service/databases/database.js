@@ -1,36 +1,32 @@
 const mongoose = require('mongoose');
 
+// Abilita il logging delle query di Mongoose
+mongoose.set('debug', true);
+
 /**
  * The MongoDB connection string.
  * @type {string}
  */
-const mongoDB = 'mongodb://localhost:27017/ldbc';
+const mongoDB = 'mongodb://localhost:27017/ldbc'; 
 
 /**
  * Set mongoose's Promise to use Node's Promise.
  */
 mongoose.Promise = global.Promise;
 
-
 /**
- * Establish a connection to the MongoDB databases.
- * @type {Promise}
- * @property {boolean} checkServerIdentity - Do not check server identity for TLS.
- * @returns {Promise} Returns a promise that will resolve when the connection is successfully established, or reject if there is an error.
+ * Establish a connection to the MongoDB database.
+ * @returns {Promise} Returns a promise that resolves on successful connection, or rejects on error.
  */
-connection = mongoose.connect(mongoDB, {
+const connection = mongoose.connect(mongoDB, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
     checkServerIdentity: false
 })
     .then(() => {
-        /**
-         * Log a success message to the console if the connection is successful.
-         */
-        console.log('connection to mongodb worked!');
+        console.log('Connection to MongoDB successful!');
     })
     .catch((error) => {
-        /**
-         * Log an error message to the console if the connection fails.
-         * @param {Object} error - The error object containing details about the error.
-         */
-        console.log('connection to mongodb did not work! ' + JSON.stringify(error));
+        console.log('Connection to MongoDB failed: ' + JSON.stringify(error));
     });
+
