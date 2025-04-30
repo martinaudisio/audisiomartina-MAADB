@@ -11,6 +11,14 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const baseApiUrl = 'express';
 
+
+/**
+ * Route handlers
+ */
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const personRoutes = require('./routes/personRoutes'); 
+
 const app = express();
 
 /**
@@ -18,11 +26,8 @@ const app = express();
  */
 app.use(cors());
 
-/**
- * Route handlers
- */
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+require('./models/person');
+
 
 /**
  * View engine setup using EJS
@@ -41,6 +46,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+app.use('/person', personRoutes);
 /**
  * Starts the server on the specified port
  */
@@ -54,7 +60,6 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 app.use(function(req, res, next) {
   next(createError(404));
 });
-
 
 
 /**
