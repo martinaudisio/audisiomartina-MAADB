@@ -4,7 +4,7 @@
  */
 
 const express = require('express');
-const driver = require('./config/neo4j'); // Neo4j driver instance
+const driver = require('./config/neo4j'); 
 const app = express();
 
 const bodyParser = require('body-parser');
@@ -19,7 +19,8 @@ app.listen(PORT, () => {
 });
 
 
-
+const personRoutes = require('./routes/personRoutes');
+app.use('/api/people', personRoutes);
 
 
 /**
