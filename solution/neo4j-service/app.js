@@ -20,7 +20,14 @@ app.listen(PORT, () => {
 
 
 const personRoutes = require('./routes/personRoutes');
+const postRoutes = require('./routes/postRoutes'); 
+const commentRoutes = require('./routes/commentRoutes'); 
+
+
+app.use('/api/post', postRoutes); 
 app.use('/api/people', personRoutes);
+app.use('/api/comment', commentRoutes);
+
 
 
 /**
