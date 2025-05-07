@@ -23,7 +23,7 @@ router.get('/known/:id', async (req, res) => {
 });
 
 
-module.exports = router;
+
 
 
 /**
@@ -43,6 +43,8 @@ router.get('/fof/:id', async (req, res) => {
   res.status(result.status).json(result.data || { message: result.message });
 });
 
+
+
 /**
  * Handles HTTP GET requests to calculate the total number of unique "friends of friends" (FoF)
  * for a given user. A "friend of a friend" is defined as a person who is connected through
@@ -60,3 +62,6 @@ router.get('/fof/total/:id', async (req, res) => {
   const result = await getTotalFoF(Number(id));
   res.status(result.status).json(result.data || { message: result.message });
 });
+
+
+module.exports = router;
