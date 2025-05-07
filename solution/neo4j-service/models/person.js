@@ -125,7 +125,7 @@ async function getFriendsAndFriendsOf(userId) {
   }
 }
 
-module.exports = { getFriendsAndFriendsOf };
+
 
 /**
  * Calculates the total number of friends of friends for a given user.
@@ -170,5 +170,5 @@ async function getTotalFoF(userId) {
   }
 }
 
-module.exports = { getTotalFoF };
+module.exports = { getPeopleKnownBy ,getTotalFoF, getFriendsAndFriendsOf };
 
