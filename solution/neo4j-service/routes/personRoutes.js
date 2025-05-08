@@ -65,23 +65,6 @@ router.get('/fof/total/:id', async (req, res) => {
 });
 
 
-/**
- * API endpoint to retrieve people located in a specific city.
- * 
- *
- * @route GET /locatedIn/:cityId
- * @param {string} cityId - The ID of the city to query for located people.
- * @returns {object} 200 - A list of people with their name, surname, and ID located in the city.
- * @returns {object} 404 - If no people are found in the specified city.
- * @returns {object} 500 - If an error occurs during the database query.    
- *
- */
-router.get('/locatedIn/:cityId', async (req, res) => {
-  const { cityId } = req.params;
-  const result = await getPeopleLocatedIn(Number(cityId));
-
-  res.status(result.status).json(result.data || { message: result.message });
-} );
 
 
 module.exports = router;
