@@ -10,10 +10,14 @@ const driver = require('../config/neo4j');
  * @returns {Promise<{ status: number, data?: Array<{ replyId: number, originalId: number, originalType: string }>, message?: string, error?: string }>}
  */
 async function getRepliesToOthers(userId) {
+
+  console.log('--- getRepliesToOthers ---');
+  console.log(`userId ricevuto: ${userId}`);
+
     const session = driver.session();
   
     const query = `
-      MATCH (reply:Comment)-[:HAS_CREATOR]->(author:Person {id: $userId})
+      MATCH (reply:Comment)-[:HAS_CREATOR]->(author:Person {id: ${userId}})
       MATCH (reply)-[:REPLY_OF]->(original)
       RETURN reply.id AS replyId, original.id AS originalId, labels(original)[0] AS originalType
     `;
@@ -21,11 +25,26 @@ async function getRepliesToOthers(userId) {
     try {
       const result = await session.run(query, { userId });
   
-      const replies = result.records.map(record => ({
-        replyId: record.get('replyId')?.toInt?.() ?? record.get('replyId'),
-        originalId: record.get('originalId')?.toInt?.() ?? record.get('originalId'),
-        originalType: record.get('originalType')
-      }));
+      console.log(`Numero di record ottenuti: ${result.records.length}`);
+      
+      const replies = result.records.map((record, index) => {
+        const replyInt = record.get('replyId');
+        const originalInt = record.get('originalId');
+        const originalType = record.get('originalType');
+      
+        const replyId = replyInt.low + (replyInt.high * Math.pow(2, 32));
+        const originalId = originalInt.low + (originalInt.high * Math.pow(2, 32));
+      
+        return {
+          replyId,
+          originalId,
+          originalType
+        };
+      });
+      
+  
+
+      console.log('Risultato:', replies);
   
       return { status: 200, data: replies };
   

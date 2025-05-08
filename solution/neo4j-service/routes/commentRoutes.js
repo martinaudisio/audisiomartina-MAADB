@@ -11,7 +11,9 @@ const router = express.Router();
 router.get('/repliesToOthers/:userId', async (req, res) => {
   const userId = Number(req.params.userId);
 
+  console.log(`API call: GET /repliesToOthers/${userId}`);
   const result = await getRepliesToOthers(userId);
+  console.log(`Sending response with status ${result.status}`);
   res.status(result.status).json(result.data || { message: result.message });
 });
 
