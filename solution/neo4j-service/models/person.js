@@ -56,8 +56,6 @@ async function getPeopleKnownBy(userId) {
   }
 }
 
-module.exports = { getPeopleKnownBy };
-
 
 
 /**
@@ -170,5 +168,71 @@ async function getTotalFoF(userId) {
   }
 }
 
-module.exports = { getPeopleKnownBy ,getTotalFoF, getFriendsAndFriendsOf };
+
+/**
+ * Retrieves people located in a specific city.
+ * 
+ *
+ * @async
+ * @function
+ * @param {number} cityId - The ID of the city to query for located people.
+ * @returns {Promise<object>} The response object containing status and data or error message.
+ * @returns {number} response.status - The HTTP status code indicating the result.
+ * @returns {Array<object>} response.data - The list of people located in the city, each with `name`, `surname`, and `id`.
+ * @returns {string} response.message - A message explaining the result (if no people are found or in case of an error).
+ */
+async function getPeopleLocatedIn(cityId) {
+  const session = driver.session();
+
+  const query = `
+    MATCH (p:Person)-[:IS_LOCATED_IN]->(pl:Place {id: $cityId})
+    RETURN p LIMIT 25
+  `;
+
+  try {
+      const result = await session.run(query, { cityId });
+
+      if (result.records.length === 0) {
+          const response = {
+              status: 404,
+              message: `No people found in city with id ${cityId}`
+          };
+          console.log('Status:', response.status);
+          console.log('Message:', response.message);
+          return response;
+      }
+
+      // Estrazione degli ID delle persone e dei dati necessari
+      const people = result.records.map(record => {
+          const person = record.get('p').properties;
+          const id = person.id.low + (person.id.high * Math.pow(2, 32)); 
+          return { name: person.firstName, surname: person.lastName, id };
+      });
+
+      const response = {
+          status: 200,
+          data: people
+      };
+
+      console.log('Status:', response.status);
+      console.log('Data:', response.data);
+      return response;
+
+  } catch (error) {
+      const response = {
+          status: 500,
+          message: 'An error occurred while querying the database',
+          error: error.message
+      };
+
+      console.log('Status:', response.status);
+      console.log('Error:', response.error);
+      return response;
+  } finally {
+      await session.close();
+  }
+}
+
+
+module.exports = { getPeopleKnownBy ,getTotalFoF, getFriendsAndFriendsOf, getPeopleLocatedIn };
 
