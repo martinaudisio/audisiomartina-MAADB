@@ -168,5 +168,5 @@ async function getTotalFoF(userId) {
   }
 }
 
-module.exports = { getPeopleKnownBy ,getTotalFoF, getFriendsAndFriendsOf, getPeopleLocatedIn };
+module.exports = { getPeopleKnownBy ,getTotalFoF, getFriendsAndFriendsOf };
 
