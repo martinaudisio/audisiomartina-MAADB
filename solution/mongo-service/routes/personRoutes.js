@@ -16,4 +16,11 @@ router.get('/', personController.getAllPeople);
  */
 router.get('/:id', personController.getPersonById);
 
+/**
+ * @route GET /byLocation/:id
+ * @description Retrieve people by location ID.
+ * @access Public
+ */
+router.get('/byLocation/:id', personController.getPeopleByLocation);
+
 module.exports = router;
