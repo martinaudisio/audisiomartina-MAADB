@@ -37,6 +37,41 @@ router.get('/id', async (req, res) => {
 });
 
 
+
+/**
+ * Route serving full person data for all individuals located in a specific place.
+ * @name get/byLocation/:placeId
+ * @function
+ * @async
+ * @param {string} path - Express path '/byLocation/:placeId'.
+ * @param {callback} middleware - Express middleware function handling the GET request.
+ * @returns {Object[]} - If successful, returns a status of 200 and an array of JSON objects,
+ * each containing full details of a person located in the specified place.
+ * In case of an error during the fetch, returns a status of 500 with an error message.
+ */
+router.get('/byLocation/id', async (req, res) => {
+    const id = req.query.placeId;
+    console.log(`Fetching persons located in place ID ${id}`);
+  
+    try {
+      console.log(`http://localhost:3001/api/person/byLocation/${id}`);
+      const response = await axios.get(`http://localhost:3001/api/person/byLocation/${id}`);
+      const peopleList = response.data;
+
+      if (!Array.isArray(peopleList)) {
+      return res.status(500).json({ message: 'Expected an array of people from the server' });}
+    
+      console.log('Received response:', response.data);
+      res.status(200).json(peopleList);
+
+  
+    } catch (err) {
+      console.error('Error fetching person:', err.message);
+      res.status(500).send('An error occurred while loading person by location');
+    }
+  });
+  
+
 /**
  * Route serving the list of known people for a given person ID.
  * @name get/known
@@ -104,6 +139,7 @@ router.get('/fof/id', async (req, res) => {
         res.status(500).send('An error occurred while loading fof by ID');
     }
 });
+
 
 
 module.exports = router;
