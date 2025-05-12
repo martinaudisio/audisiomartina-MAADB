@@ -1,5 +1,5 @@
 const express = require('express');
-const { getPostByUser } = require('../models/post');
+const { getContentByUser } = require('../models/post');
 const router = express.Router();
 
 /**
@@ -11,7 +11,7 @@ const router = express.Router();
 router.get('/byUser/:userId', async (req, res) => {
   const userId = Number(req.params.userId);
 
-  const result = await getPostByUser(userId);
+  const result = await getContentByUser(userId);
   console.log('Result:', result);
 
   res.status(result.status).json(result.data || { message: result.message });

@@ -1,40 +1,51 @@
 const driver = require('../config/neo4j');
+
 /**
- * Retrieves all post created by a specific user.
+ * Retrieves all posts and comments created by a specific user.
  *
  * @param {number} userId - The ID of the user (Person node).
- * @returns {Promise<{ status: number, data?: Array<Object>, post?: string }>}
+ * @returns {Promise<{ status: number, data?: Array<Object>, message?: string }>}
  */
-async function getPostByUser(userId) {
+async function getContentByUser(userId) {
     const session = driver.session();
     const query = `
-      MATCH (post:Post)-[:HAS_CREATOR]->(p:Person {id: $userId})
-      RETURN post
+      MATCH (content)-[:HAS_CREATOR]->(p:Person {id: $userId})
+      WHERE content:Post OR content:Comment
+      RETURN content, 
+             labels(content) AS contentType
     `;
   
     try {
       const result = await session.run(query, { userId });
   
-      const messages = result.records.map(record => {
-        const msg = record.get('post').properties;
-        const id = msg.id.low + (msg.id.high * Math.pow(2, 32));
+      const contents = result.records.map(record => {
+        const content = record.get('content').properties;
+        const contentType = record.get('contentType')[0];
+        
+        // Convert Neo4j Long integer to standard JavaScript number
+        const id = content.id.low + (content.id.high * Math.pow(2, 32));
+        
         return {
-          id
+          id,
+          type: contentType,
+          ...content
         };
       });
   
-      return { status: 200, data: messages };
+      return { 
+        status: 200, 
+        data: contents 
+      };
   
     } catch (error) {
       return {
         status: 500,
-        message: 'Error retrieving messages for the user',
+        message: 'Error retrieving content for the user',
         error: error.message
       };
     } finally {
       await session.close();
     }
-  }
-  
+}
 
-module.exports = { getPostByUser };
+module.exports = { getContentByUser };
