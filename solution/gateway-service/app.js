@@ -27,6 +27,8 @@ const indexRouter = require('./routes/index');
 app.use('/', indexRouter);
 const commentRouter = require('./routes/comment');
 app.use('/comment', commentRouter);
+const postRouter = require('./routes/post');
+app.use('/post', postRouter);
 
 
 app.set('view engine', 'ejs');
@@ -35,7 +37,7 @@ app.set('views', path.join(__dirname, 'views'));
 /**
  * Starts the Express HTTP server on the specified port.
  */
-const PORT = 3000;
+const PORT = 3003;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
