@@ -96,7 +96,6 @@ exports.getCommentsByLocationCountryId = async (req, res) => {
   }
 };
 
-
 /**
  * Calculates the reply times for a given array of comments by comparing the creation dates of the reply and the original comment.
  * @function

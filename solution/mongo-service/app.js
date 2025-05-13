@@ -50,10 +50,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-app.use('/person', personRoutes);
-app.use('/forum', forumRoutes);
-app.use('/post', postRoutes);
-app.use('/comment', commentRoutes);
+app.use('/api/person', personRoutes);
+app.use('/api/forum', forumRoutes);
+app.use('/api/post', postRoutes);
+app.use('/api/comment', commentRoutes);
 /**
  * Starts the server on the specified port
  */
