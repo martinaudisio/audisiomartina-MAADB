@@ -61,11 +61,9 @@ exports.getPeopleByLocation = async (req, res) => {
  */
 exports.getPersonById = async (req, res) => {
   console.log('Fetching person by ID:', req.params.id);
-  let  query = {}
-
-  query.id = Number(req.params.id);
+  const query = { id: Number(req.params.id) }; // Assicurati che req.params.id corrisponda al campo "id" nel documento
   try {
-    const person = await Person.findOne(query); 
+    const person = await Person.findOne(query, { firstName: 1, lastName: 1, _id: 0 });
     console.log('Person found:', person);
     if (!person) {
       return res.status(404).json({ message: 'Person not found' });
