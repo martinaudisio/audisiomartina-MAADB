@@ -42,7 +42,7 @@ exports.getForumsByModerator = async (req, res) => {
 exports.getForumById = async (req, res) => {
   const { forumId } = req.params; 
   try {
-    const forum = await Forum.findOne({ id: Number(forumId) }); 
+    const forum = await Forum.findOne({ id: Number(forumId) }, { title: 1, _id: 0 });
     if (forum) {
       res.status(200).json(forum);
     } else {
