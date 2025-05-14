@@ -69,4 +69,50 @@ router.get('/creator/id', async (req, res) => {
 
 
 
+router.get('/byOrganization/:type/:orgId', async (req, res) => {
+    // Extract the organization ID from the request parameters
+    const id = req.params.orgId;
+    const type = req.params.type;
+
+    try {
+        console.log(`Fetching people by organization from http://localhost:3002/api/people/byOrganization/${type}/${id}`);
+
+        // Fetch people data from the API
+        const people = await axios.get(`http://localhost:3002/api/people/byOrganization/${type}/${id}`);
+        console.log('Received response:', people.data);
+        const peopleData = people.data
+
+         const peopleWithPosts = await Promise.all(
+            peopleData.map(async (person) => {
+                const { id, since } = person;
+
+                try {
+                    const postResponse = await axios.get(`http://localhost:3001/api/post/creator/${id}/date/${since}`);
+                    const posts = postResponse.data;
+
+                    return {
+                        ...person,
+                        posts: posts || []
+                    };
+                } catch (postError) {
+                    console.error(`Error fetching posts for person ID ${id}:`, postError.message);
+                    return {
+                        ...person,
+                        posts: []
+                    };
+                }
+            })
+        );
+
+        res.status(200).json(peopleWithPosts);
+
+
+    } catch (err) {
+        // Log any errors and send a response indicating an error occurred
+        console.error('Error fetching post by oragnization:', err.message);
+        res.status(500).send('An error occurred while loading post by oragnization');
+    }
+});
+
+
 module.exports = router;
