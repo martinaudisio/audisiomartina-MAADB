@@ -3,6 +3,7 @@ const { getPeopleKnownBy } = require('../models/person');
 const { getFriendsAndFriendsOf } = require('../models/person');
 const { getTotalFoF } = require('../models/person');
 const { getPeopleLocatedIn } = require('../models/person');
+const { searchPersonsByLocationAndTag } = require('../models/person');
 const router = express.Router();
 
 
@@ -24,6 +25,34 @@ router.get('/known/:id', async (req, res) => {
 });
 
 
+
+/**
+ * @route GET /byLocation/:location/byTag/:tag
+ * @description Searches for persons based on the specified location and tag provided in the URL parameters.
+ * It checks that both parameters are present; if either is missing, a 400 error is returned.
+ * If both parameters are provided, it calls the searchPersonsByLocationAndTag function to query the database
+ * for persons matching those criteria and returns the result as a JSON response.
+ * In case of a database error, a 500 error is returned with an appropriate error message.
+ *
+ * @param {string} location - The name of the location to search for persons.
+ * @param {string} tag - The tag representing the person's interest.
+ * @returns {Object} JSON response containing an array of person objects or an error message.
+ */
+router.get('/byLocation/:location/byTag/:tag', async (req, res) => {
+    const { location, tag } = req.params;
+
+    if (!location || !tag) {
+        return res.status(400).json({ error: 'Parametri "location" e "tag" richiesti.' });
+    }
+
+    try {
+        const persons = await searchPersonsByLocationAndTag(Number(location), Number(tag));
+        res.json(persons);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Errore durante la ricerca nel database.' });
+    }
+});
 
 
 

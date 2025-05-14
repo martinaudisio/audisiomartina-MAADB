@@ -56,6 +56,49 @@ async function getPeopleKnownBy(userId) {
   }
 }
 
+/**
+ * Searches for persons based on the specified location and tag.
+ *
+ * This function queries the Neo4j database to find persons who are located in the provided place
+ * and have an interest matching the provided tag.
+ *
+ * @param {string} placeName - The name of the place where the person is located.
+ * @param {string} tagName - The name of the tag representing the person's interest.
+ * @returns {Promise<Array<{ id: any, nome: any, cognome: any }>>} A promise that resolves to an array of person objects,
+ * where each object contains the id, nome, and cognome.
+ * @throws {Error} Throws an error if the database query fails.
+ */
+async function searchPersonsByLocationAndTag(placeId, tagId) {
+    const session = driver.session();
+
+    const query = `
+        MATCH (p:Person)-[:IS_LOCATED_IN]->(pl:Place {id: $placeId}),
+              (p)-[:HAS_INTEREST]->(t:Tag {id: $tagId})
+        RETURN p.id AS id, p.firstName AS name, p.lastName AS surname
+    `;
+
+    try {
+        const result = await session.run(query, { placeId, tagId });
+
+        return result.records.map(record => {
+            const neo4jId = record.get('id');
+            const id = typeof neo4jId === 'object' && neo4jId.low !== undefined
+                ? neo4jId.low + (neo4jId.high * Math.pow(2, 32))
+                : neo4jId;
+
+            return {
+                id,
+                name: record.get('name'),
+                surname: record.get('surname')
+            };
+        });
+    } catch (error) {
+        console.error('Errore nella query Neo4j:', error);
+        throw error;
+    } finally {
+        await session.close();
+    }
+};
 
 
 /**
@@ -168,5 +211,5 @@ async function getTotalFoF(userId) {
   }
 }
 
-module.exports = { getPeopleKnownBy ,getTotalFoF, getFriendsAndFriendsOf };
+module.exports = { getPeopleKnownBy ,getTotalFoF, getFriendsAndFriendsOf, searchPersonsByLocationAndTag };
 
