@@ -100,6 +100,54 @@ async function searchPersonsByLocationAndTag(placeId, tagId) {
     }
 };
 
+/**
+ * Retrieves persons associated with a specific organization based on the provided organization type.
+ *
+ * Depending on the organization type ("Company" or "University"), this function queries the Neo4j database
+ * to find persons who either work at the company or study at the university specified by orgId.
+ *
+ * @param {number|string} orgId - The identifier of the organization.
+ * @param {string} orgType - The type of the organization. Valid values are "Company" or "University".
+ * @returns {Promise<Array<{ id: number, name: string, surname: string }>>} A promise that resolves to an array of person objects,
+ * where each object includes the person's id, first name (as name), and last name (as surname).
+ * @throws {Error} Throws an error if the organization type is invalid or if the database query fails.
+ */
+async function getPersonsByOrganization(orgId) {
+    const session = driver.session();
+
+    // Costruisci la query in base al tipo di organizzazione
+    let query = '';
+    let params = { orgId };
+
+    query = `
+        MATCH (p:Person)-[:WORKS_AT]->(o:Organization {id: $orgId})
+        RETURN p.id AS id, p.firstName AS name, p.lastName AS surname
+    `;
+
+
+    try {
+        const result = await session.run(query, params);
+
+        return result.records.map(record => {
+            const neo4jId = record.get('id');
+            const id = typeof neo4jId === 'object' && neo4jId.low !== undefined
+                ? neo4jId.low + (neo4jId.high * Math.pow(2, 32))
+                : neo4jId;
+
+            return {
+                id,
+                name: record.get('name'),
+                surname: record.get('surname')
+            };
+        });
+    } catch (error) {
+        console.error('Errore nella query Neo4j:', error);
+        throw error;
+    } finally {
+        await session.close();
+    }
+};
+
 
 /**
  * Finds all people known by the user with the given ID, and calculates their friends of friends.
@@ -211,5 +259,5 @@ async function getTotalFoF(userId) {
   }
 }
 
-module.exports = { getPeopleKnownBy ,getTotalFoF, getFriendsAndFriendsOf, searchPersonsByLocationAndTag };
+module.exports = { getPeopleKnownBy ,getTotalFoF, getFriendsAndFriendsOf, searchPersonsByLocationAndTag, getPersonsByOrganization };
 

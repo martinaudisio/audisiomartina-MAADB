@@ -4,6 +4,7 @@ const { getFriendsAndFriendsOf } = require('../models/person');
 const { getTotalFoF } = require('../models/person');
 const { getPeopleLocatedIn } = require('../models/person');
 const { searchPersonsByLocationAndTag } = require('../models/person');
+const { getPersonsByOrganization } = require('../models/person');
 const router = express.Router();
 
 
@@ -54,6 +55,28 @@ router.get('/byLocation/:location/byTag/:tag', async (req, res) => {
     }
 });
 
+
+/**
+ * @route GET /byOrganization/:id
+ * @description Retrieves persons associated with a specific organization based on the provided organization ID.
+ * The organization ID is extracted from the URL parameters and converted to a number.
+ * It calls the getPersonsByOrganization function from the person model to query the Neo4j database.
+ * On success, it returns a JSON response with an array of person objects.
+ * In case of an error (e.g., invalid organization ID or database query failure), it returns a 400 status code with an error message.
+ *
+ * @param {string} id - The identifier of the organization.
+ * @returns {Object} JSON response containing an array of person objects or an error message.
+ */
+router.get('/byOrganization/:id', async (req, res) => {
+    const {id } = req.params;
+
+    try {
+        const persons = await getPersonsByOrganization(Number(id));
+        res.json(persons);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
 
 
 /**
