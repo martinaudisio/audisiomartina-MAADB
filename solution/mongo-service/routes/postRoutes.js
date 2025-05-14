@@ -35,6 +35,17 @@ router.get('/location/:locationCountryId', postController.getPostsByLocationCoun
 
 
 /**
+ * @route GET /posts/creator/:id/date/:year
+ * @description Retrieves posts for a specific creator that were created after January 1 of the specified year.
+ * @param {string} id - The creator's unique identifier (CreatorPersonId).
+ * @param {string} year - The yaer used to define the threshold date (January 1 of this year).
+ * @access Public
+ */
+router.get('/creator/:id/date/:year', postController.getPostsByCreatorAndDate);
+
+
+
+/**
  * @route GET /posts/forum/:containerForumId
  * @description Retrieve posts associated with a specific Forum, identified by ContainerForumId.
  * @param {number} containerForumId - The ID of the forum container to filter posts by.
