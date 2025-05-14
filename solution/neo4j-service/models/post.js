@@ -1,4 +1,5 @@
 const driver = require('../config/neo4j');
+const { formatDate } = require('../utils/utils');
 
 /**
  * Retrieves all posts and comments created by a specific user.
@@ -13,6 +14,7 @@ async function getContentByUser(userId) {
       WHERE content:Post OR content:Comment
       RETURN content, 
              labels(content) AS contentType
+      ORDER BY content.creationDate DESC
     `;
   
     try {
@@ -23,12 +25,14 @@ async function getContentByUser(userId) {
         const contentType = record.get('contentType')[0];
         
         // Convert Neo4j Long integer to standard JavaScript number
-        const id = content.id.low + (content.id.high * Math.pow(2, 32));
+        const newId = content.id.low + (content.id.high * Math.pow(2, 32));
         
         return {
-          id,
+          contentId: newId,
           type: contentType,
-          ...content
+          creationDate: formatDate(content.creationDate),
+          content: content.content, 
+          
         };
       });
   
@@ -48,4 +52,47 @@ async function getContentByUser(userId) {
     }
 }
 
-module.exports = { getContentByUser };
+/**
+ * Retrieves the forum title to which the post belongs based on its ID.
+ *
+ * @param {number} postId - The post's ID.
+ * @returns {Promise<{ status: number, title?: string, message?: string }>}
+ */
+async function getForumTitleByPost(postId) {
+    const session = driver.session();
+    const query = `
+        MATCH (post:Post { id: $postId })-[:PART_OF]->(forum:Forum)
+        RETURN forum.title AS title
+    `;
+    try {
+        const result = await session.run(query, { postId });
+        
+        if (result.records.length === 0) {
+            return {
+                status: 404,
+                message: 'Nessun forum trovato per il post specificato'
+            };
+        }
+
+        const title = result.records[0].get('title');
+
+        return {
+            status: 200,
+            title: title
+        };
+    } catch (error) {
+        return {
+            status: 500,
+            message: 'Errore durante il recupero del titolo del forum',
+            error: error.message
+        };
+    } finally {
+        await session.close();
+    }
+}
+
+
+module.exports = { 
+    getContentByUser,
+    getForumTitleByPost 
+};

@@ -1,5 +1,5 @@
 const express = require('express');
-const { getContentByUser } = require('../models/post');
+const { getContentByUser, getForumTitleByPost } = require('../models/post');
 const router = express.Router();
 
 /**
@@ -14,7 +14,17 @@ router.get('/byUser/:userId', async (req, res) => {
   const result = await getContentByUser(userId);
   console.log('Result:', result);
 
-  res.status(result.status).json(result.data || { message: result.message });
+  res.status(result.status).json(result || { message: result.message });
+});
+
+router.get('/Forumtitle/:postId', async (req, res) => {
+  const id = Number(req.params.postId);
+  //console.log('Post ID:', id);
+
+  const result = await getForumTitleByPost(id);
+  console.log('Result:', result.title);
+
+  res.status(result.status).json(result.title|| { message: result.message });
 });
 
 
