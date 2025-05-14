@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const postController = require('../controllers/postController'); // Assicurati di usare il percorso corretto per il controller
+const postController = require('../controllers/postController'); 
 
 /**
  * @route GET /posts

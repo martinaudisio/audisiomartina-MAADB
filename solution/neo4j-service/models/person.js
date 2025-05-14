@@ -112,32 +112,43 @@ async function searchPersonsByLocationAndTag(placeId, tagId) {
  * where each object includes the person's id, first name (as name), and last name (as surname).
  * @throws {Error} Throws an error if the organization type is invalid or if the database query fails.
  */
-async function getPersonsByOrganization(orgId) {
+async function getPersonsByOrganization(orgId, orgType) {
     const session = driver.session();
 
     // Costruisci la query in base al tipo di organizzazione
     let query = '';
     let params = { orgId };
 
+    if (orgType === 'Company') {
     query = `
-        MATCH (p:Person)-[:WORKS_AT]->(o:Organization {id: $orgId})
-        RETURN p.id AS id, p.firstName AS name, p.lastName AS surname
+        MATCH (p:Person)-[r:WORKS_AT]->(o:Organization {id: $orgId})
+        RETURN p.id AS id, p.firstName AS name, p.lastName AS surname, r.workFrom AS since
     `;
-
+    } else if (orgType === 'University') {
+        query = `
+            MATCH (p:Person)-[r:STUDY_AT]->(o:Organization {id: $orgId})
+            RETURN p.id AS id, p.firstName AS name, p.lastName AS surname, r.classYear AS since
+        `;
+    }
 
     try {
         const result = await session.run(query, params);
 
         return result.records.map(record => {
             const neo4jId = record.get('id');
+            const rawSince = record.get('since');
             const id = typeof neo4jId === 'object' && neo4jId.low !== undefined
                 ? neo4jId.low + (neo4jId.high * Math.pow(2, 32))
                 : neo4jId;
+             const since = typeof rawSince === 'object' && rawSince.low !== undefined
+                ? rawSince.low + rawSince.high * Math.pow(2, 32)
+                : rawSince;
 
             return {
                 id,
                 name: record.get('name'),
-                surname: record.get('surname')
+                surname: record.get('surname'),
+                since
             };
         });
     } catch (error) {

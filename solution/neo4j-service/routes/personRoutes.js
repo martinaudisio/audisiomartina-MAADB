@@ -57,7 +57,7 @@ router.get('/byLocation/:location/byTag/:tag', async (req, res) => {
 
 
 /**
- * @route GET /byOrganization/:id
+ * @route GET /byOrganization/:type/:id
  * @description Retrieves persons associated with a specific organization based on the provided organization ID.
  * The organization ID is extracted from the URL parameters and converted to a number.
  * It calls the getPersonsByOrganization function from the person model to query the Neo4j database.
@@ -67,11 +67,15 @@ router.get('/byLocation/:location/byTag/:tag', async (req, res) => {
  * @param {string} id - The identifier of the organization.
  * @returns {Object} JSON response containing an array of person objects or an error message.
  */
-router.get('/byOrganization/:id', async (req, res) => {
-    const {id } = req.params;
+router.get('/byOrganization/:type/:id', async (req, res) => {
+    const { type, id } = req.params;
+    const validTypes = ['Company', 'University'];
+    if (!validTypes.includes(type)) {
+        return res.status(400).json({ error: 'Tipo di organizzazione non valido. Usa "Company" o "University".' });
+    }
 
     try {
-        const persons = await getPersonsByOrganization(Number(id));
+        const persons = await getPersonsByOrganization(Number(id), type);
         res.json(persons);
     } catch (error) {
         res.status(400).json({ error: error.message });

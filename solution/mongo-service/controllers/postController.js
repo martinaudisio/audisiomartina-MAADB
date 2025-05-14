@@ -129,7 +129,7 @@ exports.getPostsByCreatorAndDate = async (req, res) => {
     console.log('Fetching posts for CreatorPersonId:', req.params.id);
     const posts = await Post.find({ 
       CreatorPersonId: Number(req.params.id),
-      creationDate: { $gt: dateThreshold }
+      creationDate: { $gt: dateThreshold} 
      })
     .sort({ creationDate: -1 });  
 
