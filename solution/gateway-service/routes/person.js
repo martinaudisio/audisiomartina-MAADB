@@ -105,6 +105,40 @@ router.get('/known/id', async (req, res) => {
 
 
 /**
+ * Route to retrieve people associated with a specific location and tag.
+ * @name get/byLocation/:locId/byTag/:tagId
+ * @function
+ * @async
+ * @param {Object} req - Express request object.
+ * @param {Object} req.query - The query parameters.
+ * @param {string} req.query.locId - The location ID.
+ * @param {string} req.query.tagId - The tag ID.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - A Promise that resolves when the operation is complete.
+ */
+router.get('/byLocation/:locId/byTag/:tagId', async (req, res) => {
+
+    const locationId = req.params.locId;
+    const tagId = req.params.tagId;
+    try {
+        console.log(`Fetching people by location and tag from http://localhost:3002/api/people/byLocation/${locationId}/byTag/${tagId}`);
+
+        // Fetch people data from the API
+        const response = await axios.get(`http://localhost:3002/api/people/byLocation/${locationId}/byTag/${tagId}`);
+        console.log('Received response:', response.data);
+
+        // Send the people data as the response
+        res.status(200).json(response.data);
+
+    } catch (err) {
+        // Log any errors and send a response indicating an error occurred
+        console.error('Error fetching person by location and tag:', err.message);
+        res.status(500).send('An error occurred while loading person by location and tag');
+    }
+});
+
+
+/**
  * Route serving the list of friends-of-friends (FOF) for a given person ID.
  * @name get/fof/id
  * @function
