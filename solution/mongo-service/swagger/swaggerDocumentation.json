@@ -404,7 +404,195 @@
                     }
                 }
             }
-        }
+        },
+        "/api/person": {
+            "get": {
+                "summary": "Retrieve all persons",
+                "description": "Retrieve all persons from the database.",
+                "responses": {
+                "200": {
+                    "description": "A list of persons",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Person"
+                        }
+                        }
+                    }
+                    }
+                },
+                "500": {
+                    "description": "Error retrieving persons"
+                }
+                }
+            }
+            },
+            "/api/person/{id}": {
+                "get": {
+                    "summary": "Retrieve a person by its ID",
+                    "description": "Retrieve a single person by its ID.",
+                    "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the person to retrieve",
+                        "schema": {
+                        "type": "integer"
+                        }
+                    }
+                    ],
+                    "responses": {
+                    "200": {
+                        "description": "Person retrieved successfully",
+                        "content": {
+                        "application/json": {
+                            "schema": {
+                            "$ref": "#/components/schemas/PersonName"
+                            }
+                        }
+                        }
+                    },
+                    "404": {
+                        "description": "Person not found"
+                    },
+                    "500": {
+                        "description": "Error retrieving person"
+                    }
+                }
+            }
+        },
+            "/api/person/byLocation/{id}": {
+                "get": {
+                    "summary": "Retrieve a person by its location ID",
+                    "description": "Retrieve people by their location ID.",
+                    "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the location of person to retrieve",
+                        "schema": {
+                        "type": "integer"
+                        }
+                    }
+                    ],
+                    "responses": {
+                    "200": {
+                        "description": "Person retrieved successfully",
+                        "content": {
+                        "application/json": {
+                            "schema": {
+                            "$ref": "#/components/schemas/Person"
+                            }
+                        }
+                        }
+                    },
+                    "404": {
+                        "description": "Person not found"
+                    },
+                    "500": {
+                        "description": "Error retrieving person"
+                    }
+                }
+            }
+        },
+        "/api/forum": {
+            "get": {
+                "summary": "Retrieve all forums",
+                "description": "Retrieve all forums from the database.",
+                "responses": {
+                "200": {
+                    "description": "A list of forums",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Forum"
+                        }
+                        }
+                    }
+                    }
+                },
+                "500": {
+                    "description": "Error retrieving forums"
+                }
+                }
+            }
+        },
+        "/api/forum/moderator/{moderatorId}": {
+            "get": {
+                "summary": "Retrieve a forum by its moderator (person) ID",
+                "description": "Retrieve a single forum by the moderator ID.",
+                "parameters": [
+                {
+                    "name":"moderatorId",
+                    "in": "path",
+                    "required": true,
+                    "description": "ID of the moderator to retrieve the forum from",
+                    "schema": {
+                    "type": "integer"
+                    }
+                }
+                ],
+                "responses": {
+                "200": {
+                    "description": "Forum retrieved successfully",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/Forum"
+                        }
+                    }
+                    }
+                },
+                "404": {
+                    "description": "Forum not found"
+                },
+                "500": {
+                    "description": "Error retrieving forum"
+                }
+                }
+            }
+        },
+        "/api/forum/{id}": {
+            "get": {
+                "summary": "Retrieve the forum title by its ID",
+                "description": "Retrieve a single forum by its ID.",
+                "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "ID of the forum to retrieve",
+                    "schema": {
+                    "type": "integer"
+                    }
+                }
+                ],
+                "responses": {
+                "200": {
+                    "description": "Forum retrieved successfully",
+                    "content": {
+                    "application/json": {
+                        "schema": {
+                        "$ref": "#/components/schemas/ForumTitle"
+                        }
+                    }
+                    }
+                },
+                "404": {
+                    "description": "Forum not found"
+                },
+                "500": {
+                    "description": "Error retrieving forum"
+                }
+                }
+            }
+        }        
     },
     "components": {
         "schemas": {
@@ -454,11 +642,55 @@
                     }
                 }
             },
-            "Comment": {
-                "allOf": [
-                {
-                    "type": "object",
-                    "properties": {
+        "Comment": {
+                "type": "object",
+                "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "creationDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2012-10-01T12:00:00Z"
+                },
+                "locationIP": {
+                    "type": "string",
+                    "example": "91.191.192.127"
+                },
+                "browserUsed": {
+                    "type": "string",
+                    "example": "Firefox"
+                },
+                "CreatorPersonId": {
+                    "type": "integer",
+                    "example": 14
+                },
+                "ParentPostId": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "ParentCommentId": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "lenght": {
+                    "type": "integer",
+                    "example": 34
+                },
+                "content": {
+                    "type": "string",
+                    "example": "This is a sample comment content."
+                },
+                "LocationCountryId": {
+                    "type": "integer",
+                    "example": 4
+                }
+            }
+        }, 
+        "Person": {
+                "type": "object",
+                "properties": {
                     "id": {
                         "type": "integer",
                         "example": 1
@@ -466,49 +698,95 @@
                     "creationDate": {
                         "type": "string",
                         "format": "date-time",
-                        "example": "2012-10-01T12:00:00Z"
+                        "example": "2020-01-01T12:00:00Z"
+                    },
+                    "firstName": {
+                        "type": "string",
+                        "example": "John"
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "example": "Doe"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "enum": [
+                            "male",
+                            "female",
+                            "other"
+                        ],
+                        "example": "male"
+                    },
+                    "birthday": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "1990-05-15T00:00:00Z"
                     },
                     "locationIP": {
                         "type": "string",
-                        "example": "91.191.192.127"
+                        "example": "192.168.1.1"
                     },
                     "browserUsed": {
                         "type": "string",
-                        "example": "Firefox"
+                        "example": "Chrome"
                     },
-                    "CreatorPersonId": {
+                    "LocationCityId": {
                         "type": "integer",
-                        "example": 14
+                        "example": 100
                     },
-                    "ParentPostId": {
-                        "type": "integer",
-                        "example": 0
-                    },
-                    "ParentCommentId": {
-                        "type": "integer",
-                        "example": 0
-                    },
-                    "lenght": {
-                        "type": "integer",
-                        "example": 34
-                    },
-                    "content": {
+                    "language": {
                         "type": "string",
-                        "example": "This is a sample comment content."
+                        "example": "en"
                     },
-                    "LocationCountryId": {
-                        "type": "integer",
-                        "example": 4
+                    "email": {
+                        "type": "string",
+                        "example": "john.doe@example.com"
                     }
-                    }
-                },
-                {
-                    "oneOf": [
-                    { "required": ["ParentPostId"] },
-                    { "required": ["ParentCommentId"] }
-                    ]
                 }
-            ]
+            },
+        "PersonName": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Hossein"
+                },
+                "surname": {
+                    "type": "string", 
+                    "example": "Forouhar"
+                }
+            }
+        },
+        "Forum": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "creationDate": {
+                    "type": "string", 
+                    "format": "date-time", 
+                    "example": "2012-10-01T12:00:00Z"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "General Discussion"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "A forum for general topics and discussions."
+                }
+            }
+        },
+        "ForumTitle": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "example": "Wall of Hossein Forouhar"
+                }
+            }
         }
     }
   }
