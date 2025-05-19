@@ -9,6 +9,9 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express')
+const openApiDocumentation = require('./swagger/swaggerDocumentation.json')
+
 
 
 
@@ -29,6 +32,9 @@ const commentRouter = require('./routes/comment');
 app.use('/comment', commentRouter);
 const postRouter = require('./routes/post');
 app.use('/post', postRouter);
+
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocumentation))
 
 
 app.set('view engine', 'ejs');

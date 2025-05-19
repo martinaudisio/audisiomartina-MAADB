@@ -1,0 +1,580 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Gateway Service API",
+    "version": "1.0.0",
+    "description": "This is the API documentation for the Gateway Service."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3003",
+      "description": "Local server"
+    }
+  ],
+  "paths": {
+    "/comment/avgAnswer/id": {
+      "get": {
+        "summary": "Get average reply time by person ID",
+        "description": "Retrieves the average reply time for comments made by a person.",
+        "parameters": [
+          {
+            "name": "personId",
+            "in": "query",
+            "description": "The ID of the person.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with average reply time.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "averageReplyTimeSeconds": {
+                      "type": "number"
+                    },
+                    "formatted": {
+                      "type": "object",
+                      "properties": {
+                        "days": {
+                          "type": "integer"
+                        },
+                        "hours": {
+                          "type": "integer"
+                        },
+                        "minutes": {
+                          "type": "integer"
+                        },
+                        "seconds": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/person/id": {
+      "get": {
+        "summary": "Get person by ID",
+        "description": "Retrieves person data based on the provided person ID.",
+        "parameters": [
+          {
+            "name": "personId",
+            "in": "query",
+            "description": "The ID of the person to retrieve.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with person data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonName"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/person/byLocation/id": {
+      "get": {
+        "summary": "Get persons by location",
+        "description": "Retrieves person data for all individuals located in a specific place.",
+        "parameters": [
+          {
+            "name": "placeId",
+            "in": "query",
+            "description": "The ID of the place to filter persons.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with an array of persons.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/Person"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/person/byLocation/{locId}/byTag/{tagId}": {
+      "get": {
+        "summary": "Get persons by location and tag",
+        "description": "Retrieves people associated with a specific location and tag.",
+        "parameters": [
+          {
+            "name": "locId",
+            "in": "path",
+            "description": "The location ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "tagId",
+            "in": "path",
+            "description": "The tag ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with people data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/PersonInfo"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/person/known/id": {
+      "get": {
+        "summary": "Get known persons",
+        "description": "Retrieves a list of known people for the given person ID.",
+        "parameters": [
+          {
+            "name": "personId",
+            "in": "query",
+            "description": "The person's ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with known persons data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/PersonInfo"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/person/fof/id": {
+      "get": {
+        "summary": "Get friends of friends (FOF)",
+        "description": "Retrieves the list of friends-of-friends for the given person ID.",
+        "parameters": [
+          {
+            "name": "personId",
+            "in": "query",
+            "description": "The ID of the person.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with FOF data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PersonFOF"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/post/creator/id": {
+      "get": {
+        "summary": "Get content by creator ID",
+        "description": "Retrieves all posts and comments created by a specific person along with enriched data (e.g., forum title or parent post data).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "The creator's person ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with creator data and content.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatorContent"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/post/byOrganization/{type}/{orgId}": {
+      "get": {
+        "summary": "Get content by organization",
+        "description": "Retrieves people associated with a specific organization and for each person, fetches their posts since a given date.",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "description": "The organization type.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "University",
+                "Company"
+              ]
+            }
+          },
+          {
+            "name": "orgId",
+            "in": "path",
+            "description": "The organization ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with an array of people and their posts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CreatorPostsContent"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PersonName": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "example": "Hossein"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Forouhar"
+          }
+        }
+      },
+      "Person": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2020-01-01T12:00:00Z"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female",
+              "other"
+            ],
+            "example": "male"
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date-time",
+            "example": "1990-05-15T00:00:00Z"
+          },
+          "locationIP": {
+            "type": "string",
+            "example": "192.168.1.1"
+          },
+          "browserUsed": {
+            "type": "string",
+            "example": "Chrome"
+          },
+          "LocationCityId": {
+            "type": "integer",
+            "example": 100
+          },
+          "language": {
+            "type": "string",
+            "example": "en"
+          },
+          "email": {
+            "type": "string",
+            "example": "john.doe@example.com"
+          }
+        }
+      },
+      "PersonInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 26388279066655
+          },
+          "name": {
+            "type": "string",
+            "example": "Otto"
+          },
+          "surname": {
+            "type": "string",
+            "example": "Richter"
+          }
+        }
+      },
+      "PersonFOF": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 26388279066655
+          },
+          "name": {
+            "type": "string",
+            "example": "Otto"
+          },
+          "surname": {
+            "type": "string",
+            "example": "Richter"
+          },
+          "mutualFriends": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "CreatorContent": {
+        "type": "object",
+        "properties": {
+          "creator": {
+            "type": "object",
+            "properties": {
+              "firstName": {
+                "type": "string",
+                "example": "Jan"
+              },
+              "lastName": {
+                "type": "string",
+                "example": "Zakrzewski"
+              }
+            }
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "contentId": {
+                  "type": "number",
+                  "example": 1168231107465
+                },
+                "type": {
+                  "type": "string",
+                  "example": "Comment"
+                },
+                "creationDate": {
+                  "type": "string",
+                  "format": "date-time",
+                  "example": "2012-11-19T19:51:30.896Z"
+                },
+                "content": {
+                  "type": "string",
+                  "example": "thx"
+                },
+                "parentPost": {
+                  "type": "object",
+                  "properties": {
+                    "originalId": {
+                      "type": "number",
+                      "example": 1168231107462
+                    },
+                    "originalType": {
+                      "type": "string",
+                      "example": "Post"
+                    },
+                    "id": {
+                      "type": "number",
+                      "example": 1168231107462
+                    },
+                    "content": {
+                      "type": "string",
+                      "example": "About Hannibal"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreatorPostsContent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 21990232555527
+          },
+          "name": {
+            "type": "string",
+            "example": "Jun"
+          },
+          "surname": {
+            "type": "string",
+            "example": "Li"
+          },
+          "since": {
+            "type": "number",
+            "example": 2005
+          },
+          "posts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string",
+                  "example": "681252856b3cb58f077f9900"
+                },
+                "creationDate": {
+                  "type": "string",
+                  "format": "date-time",
+                  "example": "2012-11-08T17:17:38.086Z"
+                },
+                "id": {
+                  "type": "number",
+                  "example": 1099511630536
+                },
+                "imageFile": {
+                  "type": "string",
+                  "example": "photo1099511630536.jpg"
+                },
+                "locationIP": {
+                  "type": "string",
+                  "example": "1.29.220.142"
+                },
+                "browserUsed": {
+                  "type": "string",
+                  "example": "Chrome"
+                },
+                "length": {
+                  "type": "number",
+                  "example": 0
+                },
+                "CreatorPersonId": {
+                  "type": "number",
+                  "example": 21990232555527
+                },
+                "ContainerForumId": {
+                  "type": "number",
+                  "example": 1099511628047
+                },
+                "LocationCountryId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "forumTitle": {
+                  "type": "string",
+                  "example": "Album 1 of Jun Li"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
