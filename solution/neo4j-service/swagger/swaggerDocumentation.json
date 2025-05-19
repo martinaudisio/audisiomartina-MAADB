@@ -1,0 +1,530 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Neo4j Service API",
+    "version": "1.0.0",
+    "description": "API documentation for the Neo4j Service."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3002",
+      "description": "Local server"
+    }
+  ],
+  "paths": {
+    "/api/comment/repliesToOthers/{userId}": {
+      "get": {
+        "summary": "Retrieve all the comments made by the specified user that are replies",
+        "description": "Retrieve all the comments made by the specified user that are replies to other Post/Comment , using the relationship REPLIES.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the user."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Original message retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentReply"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Comment not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/comment/replies/{commentId}": {
+      "get": {
+        "summary": "Retrieve the original message that a comment replies to",
+        "description": "Retrieves the original message (post or comment) to which the specified comment replies, using the REPLY_OF relationship.",
+        "parameters": [
+          {
+            "name": "commentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the comment."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Original message retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comment"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Original message not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/post/byUser/{userId}": {
+      "get": {
+        "summary": "Retrieve all messages authored by a specific user",
+        "description": "Retrieves all posts and comments created by the specified user.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the user (Person node)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Content retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object", 
+                    "$ref": "#/components/schemas/Content"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/post/Forumtitle/{postId}": {
+      "get": {
+        "summary": "Retrieve the forum title for a specific post",
+        "description": "Retrieves the forum title to which the specified post belongs.",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the post."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Forum title retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string" 
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Forum title not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/people/known/{id}": {
+      "get": {
+        "summary": "Retrieve people known by a user",
+        "description": "Retrieves all the people known by the user with the given ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the user whose connections are to be found."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Known People retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object", 
+                    "$ref": "#/components/schemas/Person"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/people/byLocation/{location}/byTag/{tag}": {
+      "get": {
+        "summary": "Search people by location and tag",
+        "description": "Searches people based on the specified location and tag provided in the URL parameters. Both parameters must be present.",
+        "parameters": [
+          {
+            "name": "location",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The location ID to search for People."
+          },
+          {
+            "name": "tag",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The tag ID representing the person's interest."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "People retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object", 
+                    "$ref": "#/components/schemas/Person"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required parameters"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/people/byOrganization/{type}/{id}": {
+      "get": {
+        "summary": "Retrieve People by organization works in or studies in",
+        "description": "Retrieves People associated with a specific organization based on the provided organization ID and type (Company or University).",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["Company", "University"]
+            },
+            "description": "The type of organization (Company or University)."
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The identifier of the organization."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "People retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object", 
+                    "$ref": "#/components/schemas/PersonOrganization"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid organization type or query error"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/people/fof/{id}": {
+      "get": {
+        "summary": "Retrieve friends of friends by user ID",
+        "description": "Returns a list of people who share mutual friends with the specified user, based on the given user ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The ID of the user."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "People retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object", 
+                    "$ref": "#/components/schemas/PersonFOF"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid organization type or query error"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/people/fof/total/{id}": {
+  "get": {
+    "summary": "Retrieve the total number of friends of friends",
+    "description": "Returns the total count of unique friends of friends for a specified user, identified by their user ID.",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        },
+        "description": "The unique identifier of the user whose friends of friends are to be counted."
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Total number of friends of friends retrieved successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "total": {
+                  "type": "integer",
+                  "example": 42
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Bad request due to invalid user ID"
+      },
+      "404": {
+        "description": "User not found"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+}
+  },
+  "components": {
+    "schemas": {
+      "CommentReply": {
+        "type": "object",
+        "properties": {
+          "replyId": {
+            "type": "integer",
+            "example": 1168231106633
+          },
+          "originalId": {
+            "type": "integer",
+            "example": 1168231106628
+          },
+          "originalType": {
+            "type": "string",
+            "example": "Comment"
+          }
+        }
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "originalId": {
+            "type": "integer",
+            "example": 1168231106601
+          },
+          "originalType": {
+            "type": "string",
+            "example": "Comment"
+          },
+          "id": {
+            "type": "integer",
+            "example": 1168231106601
+          },
+          "content": {
+            "type": "string",
+            "example": "About Woodrow Wilson"
+          }
+        }
+      },
+      "Content": {
+        "type": "object",
+        "properties": {
+          "contentId": {
+            "type": "integer",
+            "example": 893353197746
+          },
+          "type": {
+            "type": "string",
+            "example": "Post"
+          },
+          "creationDate": {
+            "type": "integer",
+            "format": "date-time",
+            "example": "2012-03-10T06:42:23"
+          },
+          "content": {
+            "type": "string",
+            "example": "About Woodrow Wilson"
+          }
+        }
+      },
+      "Person": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Otto"
+          },
+          "surname": {
+            "type": "string",
+            "example": "Richter"
+          },
+          "id": {
+            "type": "integer",
+            "example": 26388279066655
+          }
+        }
+      },
+      "PersonFOF": {
+        "type": "object",
+        "properties": {  
+          "id": {
+            "type": "integer",
+            "example": 26388279066655
+          },
+          "name": {
+            "type": "string",
+            "example": "Otto"
+          },
+          "surname": {
+            "type": "string",
+            "example": "Richter"
+          }, 
+          "mutualFriends":{
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "PersonOrganization": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 26388279066658
+          },
+          "name": {
+            "type": "string",
+            "example": "Roberto"
+          },
+          "surname": {
+            "type": "string",
+            "example": "Diaz"
+          },
+          "since": {
+            "type": "integer",
+            "example": 2004
+          }
+        }
+      },
+      "Forum": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2012-10-01T12:00:00Z"
+          },
+          "title": {
+            "type": "string",
+            "example": "General Discussion"
+          },
+          "description": {
+            "type": "string",
+            "example": "A forum for general topics and discussions."
+          }
+        }
+      },
+      "ForumTitle": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Wall of Hossein Forouhar"
+          }
+        }
+      }
+    }
+  }
+}

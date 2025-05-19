@@ -8,6 +8,9 @@ const driver = require('./config/neo4j');
 const app = express();
 
 const bodyParser = require('body-parser');
+const swaggerUi = require('swagger-ui-express')
+const openApiDocumentation = require('./swagger/swaggerDocumentation.json')
+
 app.use(express.json());
 
 /**
@@ -27,6 +30,8 @@ const commentRoutes = require('./routes/commentRoutes');
 app.use('/api/post', postRoutes); 
 app.use('/api/people', personRoutes);
 app.use('/api/comment', commentRoutes);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocumentation))
+
 
 
 
