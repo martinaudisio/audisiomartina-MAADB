@@ -10,6 +10,9 @@ const database = require('./databases/database.js');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const baseApiUrl = 'express';
+const swaggerUi = require('swagger-ui-express')
+const openApiDocumentation = require('./swagger/swaggerDocumentation.json')
+
 
 
 /**
@@ -43,6 +46,8 @@ app.set('view engine', 'ejs');
 /**
  * Middleware for logging, parsing requests, cookies, and serving static files
  */
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocumentation))
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

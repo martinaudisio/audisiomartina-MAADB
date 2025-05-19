@@ -1,0 +1,515 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Mongo Service API",
+        "version": "1.0.0",
+        "description": "API documentation for the Mongo Service."
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3001",
+            "description": "Local server"
+        }
+    ],
+    "paths": {
+        "/api/post": {
+            "get": {
+                "summary": "Retrieve all posts",
+                "description": "Retrieve all posts from the database.",
+                "responses": {
+                    "200": {
+                        "description": "A list of posts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Post"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error retrieving posts"
+                    }
+                }
+            }
+        },
+        "/api/post/{id}": {
+            "get": {
+                "summary": "Retrieve a post by its ID",
+                "description": "Retrieve a single post by its ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the post to retrieve",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Post"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Post not found"
+                    },
+                    "500": {
+                        "description": "Error retrieving post"
+                    }
+                }
+            }
+        },
+        "/api/post/creator/{creatorPersonId}": {
+            "get": {
+                "summary": "Retrieve posts by CreatorPersonId",
+                "description": "Retrieve posts created by a specific CreatorPersonId.",
+                "parameters": [
+                    {
+                        "name": "creatorPersonId",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the creator person",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Posts retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Post"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No posts found for this creator"
+                    },
+                    "500": {
+                        "description": "Error retrieving posts by creator"
+                    }
+                }
+            }
+        },
+        "/api/post/location/{locationCountryId}": {
+            "get": {
+                "summary": "Retrieve posts by LocationCountryId",
+                "description": "Retrieve posts from a specific location identified by LocationCountryId.",
+                "parameters": [
+                    {
+                        "name": "locationCountryId",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the location country",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Posts retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Post"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No posts found for this location"
+                    },
+                    "500": {
+                        "description": "Error retrieving posts by location"
+                    }
+                }
+            }
+        },
+        "/api/post/creator/{id}/date/{year}": {
+            "get": {
+                "summary": "Retrieve posts by creator and date",
+                "description": "Retrieves posts for a specific creator that were created after January 1 of the specified year.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "The creator's unique identifier (CreatorPersonId)",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "path",
+                        "required": true,
+                        "description": "The year (as a string) used to define the threshold date (January 1 of this year)",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Posts retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Post"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No posts found for this creator after the specified date"
+                    },
+                    "500": {
+                        "description": "Error retrieving posts by creator and date"
+                    }
+                }
+            }
+        },
+        "/api/post/forum/{containerForumId}": {
+            "get": {
+                "summary": "Retrieve posts by forum",
+                "description": "Retrieve posts associated with a specific Forum, identified by ContainerForumId.",
+                "parameters": [
+                    {
+                        "name": "containerForumId",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the forum container",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Posts retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Post"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No posts found for this forum"
+                    },
+                    "500": {
+                        "description": "Error retrieving posts by forum"
+                    }
+                }
+            }
+        },
+        "/api/comment": {
+            "get": {
+                "summary": "Retrieve all comments",
+                "description": "Retrieve all comments from the database.",
+                "responses": {
+                    "200": {
+                        "description": "A list of comments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Comment"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error retrieving comments"
+                    }
+                }
+            }
+        },
+        "/api/comment/{id}": {
+            "get": {
+                "summary": "Retrieve a comment by its ID",
+                "description": "Retrieve a comment by its ID.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the comment",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comment retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Comment"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Comment not found"
+                    },
+                    "500": {
+                        "description": "Error retrieving comment"
+                    }
+                }
+            }
+        },
+        "/api/comment/creator/{creatorPersonId}": {
+            "get": {
+                "summary": "Retrieve comments by creator",
+                "description": "Retrieve comments by CreatorPersonId.",
+                "parameters": [
+                    {
+                        "name": "creatorPersonId",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the creator person",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comments retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Comment"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No comments found for this creator"
+                    },
+                    "500": {
+                        "description": "Error retrieving comments by creator"
+                    }
+                }
+            }
+        },
+        "/api/comment/parent/{parentPostId}": {
+            "get": {
+                "summary": "Retrieve comments by parent post",
+                "description": "Retrieve comments by ParentPostId.",
+                "parameters": [
+                    {
+                        "name": "parentPostId",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the parent post",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comments retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Comment"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No comments found for this parent post"
+                    },
+                    "500": {
+                        "description": "Error retrieving comments by parent post"
+                    }
+                }
+            }
+        },
+        "/api/comment/location/{locationCountryId}": {
+            "get": {
+                "summary": "Retrieve comments by location country",
+                "description": "Retrieve comments by LocationCountryId.",
+                "parameters": [
+                    {
+                        "name": "locationCountryId",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the location country",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comments retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Comment"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No comments found for this location country"
+                    },
+                    "500": {
+                        "description": "Error retrieving comments by location"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Post": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer", 
+                        "example": 1
+                    },
+                    "creationDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2012-10-01T12:00:00Z"
+                    },
+                    "CreatorPersonId": {
+                        "type": "integer", 
+                        "example": 14
+                    },
+                    "imageFile": {
+                        "type": "string", 
+                        "example": "photo962072674326.jpg"
+                    },
+                    "browserUsed": {
+                        "type": "string", 
+                        "example": "Firefox"
+                    },
+                    "lenght": {
+                        "type": "integer", 
+                        "example": "0"
+                    },
+                    "ContainerForumId": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "LocationCountryId": {
+                        "type": "integer",
+                        "example": 81
+                    },
+                    "language": {
+                        "type": "string",
+                        "example": "fa"
+                    },
+                    "content": {
+                        "type": "string",
+                        "example": "This is a sample post content."
+                    }
+                }
+            },
+            "Comment": {
+                "allOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "creationDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2012-10-01T12:00:00Z"
+                    },
+                    "locationIP": {
+                        "type": "string",
+                        "example": "91.191.192.127"
+                    },
+                    "browserUsed": {
+                        "type": "string",
+                        "example": "Firefox"
+                    },
+                    "CreatorPersonId": {
+                        "type": "integer",
+                        "example": 14
+                    },
+                    "ParentPostId": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "ParentCommentId": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "lenght": {
+                        "type": "integer",
+                        "example": 34
+                    },
+                    "content": {
+                        "type": "string",
+                        "example": "This is a sample comment content."
+                    },
+                    "LocationCountryId": {
+                        "type": "integer",
+                        "example": 4
+                    }
+                    }
+                },
+                {
+                    "oneOf": [
+                    { "required": ["ParentPostId"] },
+                    { "required": ["ParentCommentId"] }
+                    ]
+                }
+            ]
+        }
+    }
+  }
+}
