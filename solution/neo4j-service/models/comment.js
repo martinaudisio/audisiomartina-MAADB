@@ -87,21 +87,19 @@ async function getOriginalMessageByComment(commentId) {
         const record = result.records[0];
         const original = record.get('original').properties;
         const originalType = record.get('originalType');
-  
-        // Se original.id è un Neo4j Long, converti in numero JavaScript
-        let originalId;
-        if (original.id && original.id.low !== undefined && original.id.high !== undefined) {
-            originalId = original.id.low + (original.id.high * Math.pow(2, 32));
-        } else {
-            originalId = original.id;
-        }
-  
+        const originalId = (original.id.low !== undefined && original.id.high !== undefined)
+            ? original.id.low + (original.id.high * Math.pow(2, 32))
+            : original.id;
+        
+        
         return {
             status: 200,
             data: {
                 originalId,
                 originalType,
-                ...original
+                id: originalId, // restituito come numero semplice
+                content: original.content
+
             }
         };
     } catch (error) {
