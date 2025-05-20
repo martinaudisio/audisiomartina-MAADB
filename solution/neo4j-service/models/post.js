@@ -19,6 +19,14 @@ async function getContentByUser(userId) {
   
     try {
       const result = await session.run(query, { userId });
+      
+      if (result.records.length === 0) {
+        return {
+          status: 404,
+          message: `No content found for the specified user ID.`
+        };
+    }
+
   
       const contents = result.records.map(record => {
         const content = record.get('content').properties;
@@ -44,8 +52,7 @@ async function getContentByUser(userId) {
     } catch (error) {
       return {
         status: 500,
-        message: 'Error retrieving content for the user',
-        error: error.message
+        message: 'Error retrieving content for the user.'
       };
     } finally {
       await session.close();
@@ -70,7 +77,7 @@ async function getForumTitleByPost(postId) {
         if (result.records.length === 0) {
             return {
                 status: 404,
-                message: 'Nessun forum trovato per il post specificato'
+                message: 'No forum found for the specified post ID.'
             };
         }
 
@@ -83,7 +90,7 @@ async function getForumTitleByPost(postId) {
     } catch (error) {
         return {
             status: 500,
-            message: 'Errore durante il recupero del titolo del forum',
+            message: 'An error occurred while retrivingg the forum title.',
             error: error.message
         };
     } finally {

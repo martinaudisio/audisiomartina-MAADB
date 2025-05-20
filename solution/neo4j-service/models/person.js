@@ -19,7 +19,7 @@ async function getPeopleKnownBy(userId) {
     if (result.records.length === 0) {
       const response = {
         status: 404,
-        message: `No friends found for user with id ${userId}`
+        message: `No friends found for the specified user ID.`
       };
       console.log('Status:', response.status);
       console.log('Message:', response.message);
@@ -37,19 +37,13 @@ async function getPeopleKnownBy(userId) {
       data: friends
     };
 
-    console.log('Status:', response.status);
-    console.log('Data:', response.data);
     return response;
 
   } catch (error) {
     const response = {
       status: 500,
-      message: 'An error occurred while querying the database',
-      error: error.message
+      message: 'An error occurred while retriving known people by the user ID.'
     };
-
-    console.log('Status:', response.status);
-    console.log('Error:', response.error);
     return response;
   } finally {
     await session.close();
@@ -79,6 +73,15 @@ async function searchPersonsByLocationAndTag(placeId, tagId) {
 
     try {
         const result = await session.run(query, { placeId, tagId });
+       
+          if (result.records.length === 0) {
+          return {
+            status: 404,
+            message: `No person found for the specified tag and location ID.`
+            };
+          }
+
+        
 
         return result.records.map(record => {
             const neo4jId = record.get('id');
@@ -93,7 +96,7 @@ async function searchPersonsByLocationAndTag(placeId, tagId) {
             };
         });
     } catch (error) {
-        console.error('Errore nella query Neo4j:', error);
+        console.error('An error occurred while retriving people by location Id and tag ID.', );
         throw error;
     } finally {
         await session.close();
@@ -120,10 +123,10 @@ async function getPersonsByOrganization(orgId, orgType) {
     let params = { orgId };
 
     if (orgType === 'Company') {
-    query = `
-        MATCH (p:Person)-[r:WORKS_AT]->(o:Organization {id: $orgId})
-        RETURN p.id AS id, p.firstName AS name, p.lastName AS surname, r.workFrom AS since
-    `;
+      query = `
+          MATCH (p:Person)-[r:WORKS_AT]->(o:Organization {id: $orgId})
+          RETURN p.id AS id, p.firstName AS name, p.lastName AS surname, r.workFrom AS since
+      `;
     } else if (orgType === 'University') {
         query = `
             MATCH (p:Person)-[r:STUDY_AT]->(o:Organization {id: $orgId})
@@ -133,6 +136,10 @@ async function getPersonsByOrganization(orgId, orgType) {
 
     try {
         const result = await session.run(query, params);
+
+        if(result.records.length == 0){
+          result.status(404).json({message: 'No person found dor the specified organization ID.'})
+        }
 
         return result.records.map(record => {
             const neo4jId = record.get('id');
@@ -152,7 +159,7 @@ async function getPersonsByOrganization(orgId, orgType) {
             };
         });
     } catch (error) {
-        console.error('Errore nella query Neo4j:', error);
+        console.error('An error occurred while retriving people by organization ID.');
         throw error;
     } finally {
         await session.close();
@@ -181,7 +188,7 @@ async function getFriendsAndFriendsOf(userId) {
     if (result.records.length === 0) {
       const response = {
         status: 404,
-        message: `No friends of friends found for user with id ${userId}`
+        message: `No friends of friends found for the specified user ID.`
       };
       console.log('Status:', response.status);
       console.log('Message:', response.message);
@@ -206,19 +213,14 @@ async function getFriendsAndFriendsOf(userId) {
       data: fof
       };
 
-    console.log('Status:', response.status);
-    console.log('Data:', response.data);
     return response;
 
   } catch (error) {
     const response = {
       status: 500,
-      message: 'An error occurred while querying the database',
-      error: error.message
+      message: 'An error occurred while retrieving friends of friends by user ID.'
     };
 
-    console.log('Status:', response.status);
-    console.log('Error:', response.error);
     return response;
   } finally {
     await session.close();

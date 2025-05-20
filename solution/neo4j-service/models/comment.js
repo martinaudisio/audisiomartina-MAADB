@@ -12,9 +12,6 @@ const driver = require('../config/neo4j');
  */
 async function getRepliesToOthers(userId) {
 
-  console.log('--- getRepliesToOthers ---');
-  console.log(`userId ricevuto: ${userId}`);
-
     const session = driver.session();
   
     const query = `
@@ -25,8 +22,15 @@ async function getRepliesToOthers(userId) {
   
     try {
       const result = await session.run(query, { userId });
+
+      if (result.records.length === 0) {
+        return {
+          status: 404,
+          message: `No replies found for the user ID specified.`
+        };
+    }
   
-      console.log(`Numero di record ottenuti: ${result.records.length}`);
+      //console.log(`Numero di record ottenuti: ${result.records.length}`);
       
       const replies = result.records.map((record, index) => {
         const replyInt = record.get('replyId');
@@ -45,15 +49,14 @@ async function getRepliesToOthers(userId) {
       
   
 
-      console.log('Risultato:', replies);
+      console.log('Result:', replies);
   
       return { status: 200, data: replies };
   
     } catch (error) {
       return {
         status: 500,
-        message: 'Error retrieving replies to others',
-        error: error.message
+        message: 'Error retrieving replies to others.'
       };
     } finally {
       await session.close();
@@ -80,7 +83,7 @@ async function getOriginalMessageByComment(commentId) {
         if (result.records.length === 0) {
             return {
                 status: 404,
-                message: 'Nessun messaggio originale trovato per il commento specificato'
+                message: 'No original message found for the specified comment ID.'
             };
         }
   
@@ -105,7 +108,7 @@ async function getOriginalMessageByComment(commentId) {
     } catch (error) {
         return {
             status: 500,
-            message: 'Errore durante il recupero del messaggio originale',
+            message: 'An error occurred while retrieving the original message by comment ID.',
             error: error.message
         };
     } finally {
