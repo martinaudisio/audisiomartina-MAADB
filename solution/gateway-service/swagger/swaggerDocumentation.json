@@ -29,7 +29,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response with average reply time.",
+            "description": "The average reply time in seconds, followed by the value in days, hours and minutes.",
             "content": {
               "application/json": {
                 "schema": {
@@ -60,8 +60,29 @@
               }
             }
           },
+          "404": {
+            "description": "No comments or replies found for the specified user",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "NoComments": {
+                    "summary": "No comments found",
+                    "value": {
+                      "message": "No comments found for the specified user ID."
+                    }
+                  },
+                  "NoReplies": {
+                    "summary": "No replies found",
+                    "value": {
+                      "message": "No replies found for the specified user ID."
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
-            "description": "Internal Server Error"
+            "description": "An error occurred while loading the average reply time."
           }
         }
       }
@@ -83,7 +104,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response with person data.",
+            "description": "Returns the first name and last name of the person associated with the specified ID.",
             "content": {
               "application/json": {
                 "schema": {
@@ -92,21 +113,24 @@
               }
             }
           },
+          "404": {
+            "description": "No person found for the specified ID."
+          },
           "500": {
-            "description": "Internal Server Error"
+            "description": "An error occurred while loading person by ID."
           }
         }
       }
     },
     "/person/byLocation/id": {
       "get": {
-        "summary": "Get persons by location",
-        "description": "Retrieves person data for all individuals located in a specific place.",
+        "summary": "Get people by location",
+        "description": "Retrieves person data for people located in a specific place.",
         "parameters": [
           {
             "name": "placeId",
             "in": "query",
-            "description": "The ID of the place to filter persons.",
+            "description": "The ID of the place to filter people.",
             "required": true,
             "schema": {
               "type": "integer"
@@ -115,7 +139,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response with an array of persons.",
+            "description": "An array of detailed person objects for the specified location.",
             "content": {
               "application/json": {
                 "schema": {
@@ -128,15 +152,36 @@
               }
             }
           },
+          "404": {
+            "description": "No content found for the specified user ID or creator not found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "NoContent": {
+                    "summary": "No content Found",
+                    "value": {
+                      "message": "No content found for the specified user ID"
+                    }
+                  },
+                  "CreatorNotFound": {
+                    "summary": "Creator not found",
+                    "value": {
+                      "message": "Creator not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "500": {
-            "description": "Internal Server Error"
+            "description": "An error occurred while loading person by location."
           }
         }
       }
     },
     "/person/byLocation/{locId}/byTag/{tagId}": {
       "get": {
-        "summary": "Get persons by location and tag",
+        "summary": "Get people by location and tag",
         "description": "Retrieves people associated with a specific location and tag.",
         "parameters": [
           {
@@ -160,7 +205,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response with people data.",
+            "description": "A list containing people information, including first name, last name and ID.",
             "content": {
               "application/json": {
                 "schema": {
@@ -173,6 +218,9 @@
               }
             }
           },
+          "404": {
+            "description": "No person found for the specified tag and location."
+          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -181,7 +229,7 @@
     },
     "/person/known/id": {
       "get": {
-        "summary": "Get known persons",
+        "summary": "Get known people",
         "description": "Retrieves a list of known people for the given person ID.",
         "parameters": [
           {
@@ -196,7 +244,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response with known persons data.",
+            "description": "An array of people known by the user identified by the provided ID. Each object includes the person's first name, last name, and unique identifier.",
             "content": {
               "application/json": {
                 "schema": {
@@ -206,8 +254,11 @@
               }
             }
           },
+          "404": {
+            "description": "No known person found for the specified ID."
+          },
           "500": {
-            "description": "Internal Server Error"
+            "description": "An error occurred while loading person known by ID"
           }
         }
       }
@@ -229,7 +280,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response with FOF data.",
+            "description": "A list of individuals, each providing their first name, last name, and the number of mutual friends shared with the specified person ID.",
             "content": {
               "application/json": {
                 "schema": {
@@ -241,8 +292,11 @@
               }
             }
           },
+          "404": {
+            "description": "No friend of friend found for the specified user ID."
+          },
           "500": {
-            "description": "Internal Server Error"
+            "description": "An error occurred while loading friend of friend by ID."
           }
         }
       }
@@ -264,7 +318,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response with creator data and content.",
+            "description": "A list of content items created by the specified creator. Each item may be either a comment or a post.",
             "content": {
               "application/json": {
                 "schema": {
@@ -273,8 +327,11 @@
               }
             }
           },
+          "404": {
+            "description": "No content found for the specified user ID"
+          },
           "500": {
-            "description": "Internal Server Error"
+            "description": "An error occurred while loading content by user ID."
           }
         }
       }
@@ -309,7 +366,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response with an array of people and their posts.",
+            "description": "A list containing posts from individuals affiliated with the specified organization, either through employment or academic enrollment.",
             "content": {
               "application/json": {
                 "schema": {
@@ -321,8 +378,11 @@
               }
             }
           },
+          "404": {
+            "description": "No person found for the given organization."
+          },
           "500": {
-            "description": "Internal Server Error"
+            "description": "An error occurred while loading post by people's oragnization."
           }
         }
       }
