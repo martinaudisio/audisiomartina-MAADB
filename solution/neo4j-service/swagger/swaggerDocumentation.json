@@ -29,23 +29,23 @@
         ],
         "responses": {
           "200": {
-            "description": "Original message retrieved successfully",
+            "description": "A list of comment replies made by the specified user ID.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CommentReply"
+                    "$ref": "#/components/schemas/ReplyInfo"
                   }
                 }
               }
             }
           },
           "404": {
-            "description": "Comment not found"
+            "description": "No original message found for the specified comment ID."
           },
           "500": {
-            "description": "Server error"
+            "description": "Error retrieving replies to others."
           }
         }
       }
@@ -67,20 +67,20 @@
         ],
         "responses": {
           "200": {
-            "description": "Original message retrieved successfully",
+            "description": "The original message to which the specified comment replies. The object includes the content, ID, and type.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Comment"
+                  "$ref": "#/components/schemas/CommentDetails"
                 }
               }
             }
           },
           "404": {
-            "description": "Original message not found"
+            "description": "No original message found for the specified comment ID."
           },
           "500": {
-            "description": "Server error"
+            "description": "An error occurred while retrieving the original message by comment ID."
           }
         }
       }
@@ -97,26 +97,29 @@
             "schema": {
               "type": "integer"
             },
-            "description": "The ID of the user (Person node)."
+            "description": "The ID of the user."
           }
         ],
         "responses": {
           "200": {
-            "description": "Content retrieved successfully",
+            "description": "A list of content created by the specified user ID. The object includes the content's id, type, and the content itself.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
                     "type": "object", 
-                    "$ref": "#/components/schemas/Content"
+                    "$ref": "#/components/schemas/ContentItem"
                   }
                 }
               }
             }
           },
+          "404": {
+            "description": "No content found for the specified user ID."
+          },
           "500": {
-            "description": "Server error"
+            "description": "Error retrieving content for the user."
           }
         }
       }
@@ -138,20 +141,21 @@
         ],
         "responses": {
           "200": {
-            "description": "Forum title retrieved successfully",
+            "description": "The forum title.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string" 
+                  "type": "string", 
+                  "$ref": "#/components/schemas/ForumTitleOnly"
                 }
               }
             }
           },
           "404": {
-            "description": "Forum title not found"
+            "description": "No forum found for the specified post ID."
           },
           "500": {
-            "description": "Server error"
+            "description": "An error occurred while retrivingg the forum title."
           }
         }
       }
@@ -173,21 +177,24 @@
         ],
         "responses": {
           "200": {
-            "description": "Known People retrieved successfully",
+            "description": "A list of names and surnames representing all known people.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
                     "type": "object", 
-                    "$ref": "#/components/schemas/Person"
+                    "$ref": "#/components/schemas/PersonBasic"
                   }
                 }
               }
             }
           },
+          "404": {
+            "description": "No friends found for the specified user ID."
+          },
           "500": {
-            "description": "Server error"
+            "description": "An error occurred while retriving known people by the user ID."
           }
         }
       }
@@ -218,24 +225,24 @@
         ],
         "responses": {
           "200": {
-            "description": "People retrieved successfully",
+            "description": "A list of individuals' first and last names (and ID) filtered by location and tag.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
                     "type": "object", 
-                    "$ref": "#/components/schemas/Person"
+                    "$ref": "#/components/schemas/PersonBasic"
                   }
                 }
               }
             }
           },
-          "400": {
-            "description": "Missing required parameters"
+          "404": {
+            "description": "No person found for the specified tag and location ID."
           },
           "500": {
-            "description": "Server error"
+            "description": "An error occurred while retriving people by location Id and tag ID."
           }
         }
       }
@@ -267,24 +274,24 @@
         ],
         "responses": {
           "200": {
-            "description": "People retrieved successfully",
+            "description": "A list of individuals working or studying at an organization, along with the start year for each.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
                     "type": "object", 
-                    "$ref": "#/components/schemas/PersonOrganization"
+                    "$ref": "#/components/schemas/PersonInOrganization"
                   }
                 }
               }
             }
           },
-          "400": {
-            "description": "Invalid organization type or query error"
+          "404": {
+            "description": "o person found dor the specified organization ID."
           },
           "500": {
-            "description": "Server error"
+            "description": "An error occurred while retriving people by organization ID."
           }
         }
       }
@@ -306,221 +313,185 @@
         ],
         "responses": {
           "200": {
-            "description": "People retrieved successfully",
+            "description": "A list of names and surnames (and mutual friends) representing friends of friends of the user.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
                     "type": "object", 
-                    "$ref": "#/components/schemas/PersonFOF"
+                    "$ref": "#/components/schemas/PersonWithMutualFriends"
                   }
                 }
               }
             }
           },
-          "400": {
-            "description": "Invalid organization type or query error"
+          "404": {
+            "description": "No friends of friends found for the specified user ID."
           },
           "500": {
-            "description": "Server error"
+            "description": "An error occurred while retrieving friends of friends by user ID."
           }
         }
-      }
-    },
-    "/api/people/fof/total/{id}": {
-  "get": {
-    "summary": "Retrieve the total number of friends of friends",
-    "description": "Returns the total count of unique friends of friends for a specified user, identified by their user ID.",
-    "parameters": [
-      {
-        "name": "id",
-        "in": "path",
-        "required": true,
-        "schema": {
-          "type": "integer"
-        },
-        "description": "The unique identifier of the user whose friends of friends are to be counted."
-      }
-    ],
-    "responses": {
-      "200": {
-        "description": "Total number of friends of friends retrieved successfully",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "total": {
-                  "type": "integer",
-                  "example": 42
-                }
-              }
-            }
-          }
-        }
-      },
-      "400": {
-        "description": "Bad request due to invalid user ID"
-      },
-      "404": {
-        "description": "User not found"
-      },
-      "500": {
-        "description": "Internal server error"
       }
     }
-  }
-}
   },
   "components": {
     "schemas": {
-      "CommentReply": {
+      "ReplyInfo": {
         "type": "object",
+        "description": "Represents a reply to a content, such as a comment or post.",
         "properties": {
           "replyId": {
             "type": "integer",
+            "description": "Unique identifier of the reply content.",
             "example": 1168231106633
           },
           "originalId": {
             "type": "integer",
+            "description": "ID of the original content to which this is a reply.",
             "example": 1168231106628
           },
           "originalType": {
             "type": "string",
+            "description": "Type of the original content (e.g., Comment, Post).",
             "example": "Comment"
           }
         }
       },
-      "Comment": {
+      "CommentDetails": {
         "type": "object",
+        "description": "Represents the basic information of a comment.",
         "properties": {
           "originalId": {
             "type": "integer",
+            "description": "Original content ID (may refer to a parent post or comment).",
             "example": 1168231106601
           },
           "originalType": {
             "type": "string",
+            "description": "Type of the original content.",
             "example": "Comment"
           },
           "id": {
             "type": "integer",
+            "description": "Unique identifier of the comment.",
             "example": 1168231106601
           },
           "content": {
             "type": "string",
+            "description": "Textual content of the comment.",
             "example": "About Woodrow Wilson"
           }
         }
       },
-      "Content": {
+      "ContentItem": {
         "type": "object",
+        "description": "Represents a generic content item, such as a post or a comment.",
         "properties": {
           "contentId": {
             "type": "integer",
+            "description": "Unique identifier of the content.",
             "example": 893353197746
           },
           "type": {
             "type": "string",
+            "description": "Type of content (e.g., Post, Comment).",
             "example": "Post"
           },
           "creationDate": {
-            "type": "integer",
+            "type": "string",
             "format": "date-time",
+            "description": "The ISO 8601 date and time when the content was created.",
             "example": "2012-03-10T06:42:23"
           },
           "content": {
             "type": "string",
+            "description": "The body text of the content.",
             "example": "About Woodrow Wilson"
           }
         }
       },
-      "Person": {
+      "PersonBasic": {
         "type": "object",
+        "description": "Basic identification information of a person.",
         "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier of the person.",
+            "example": 26388279066655
+          },
           "name": {
             "type": "string",
+            "description": "First name of the person.",
             "example": "Otto"
           },
           "surname": {
             "type": "string",
+            "description": "Last name of the person.",
             "example": "Richter"
-          },
-          "id": {
-            "type": "integer",
-            "example": 26388279066655
           }
         }
       },
-      "PersonFOF": {
+      "PersonWithMutualFriends": {
         "type": "object",
-        "properties": {  
+        "description": "Represents a person along with the number of mutual friends.",
+        "properties": {
           "id": {
             "type": "integer",
+            "description": "Unique identifier of the person.",
             "example": 26388279066655
           },
           "name": {
             "type": "string",
+            "description": "First name of the person.",
             "example": "Otto"
           },
           "surname": {
             "type": "string",
+            "description": "Last name of the person.",
             "example": "Richter"
-          }, 
-          "mutualFriends":{
+          },
+          "mutualFriends": {
             "type": "integer",
+            "description": "Number of mutual friends between users.",
             "example": 1
           }
         }
       },
-      "PersonOrganization": {
+      "PersonInOrganization": {
         "type": "object",
+        "description": "Represents a person affiliated with an organization and the year they joined.",
         "properties": {
           "id": {
             "type": "integer",
+            "description": "Unique identifier of the person.",
             "example": 26388279066658
           },
           "name": {
             "type": "string",
+            "description": "First name of the person.",
             "example": "Roberto"
           },
           "surname": {
             "type": "string",
+            "description": "Last name of the person.",
             "example": "Diaz"
           },
           "since": {
             "type": "integer",
+            "description": "Year the person joined the organization.",
             "example": 2004
           }
         }
       },
-      "Forum": {
+      "ForumTitleOnly": {
         "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "example": 1
-          },
-          "creationDate": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2012-10-01T12:00:00Z"
-          },
-          "title": {
-            "type": "string",
-            "example": "General Discussion"
-          },
-          "description": {
-            "type": "string",
-            "example": "A forum for general topics and discussions."
-          }
-        }
-      },
-      "ForumTitle": {
-        "type": "object",
+        "description": "Contains only the title of a forum.",
         "properties": {
           "title": {
             "type": "string",
+            "description": "Title of the forum.",
             "example": "Wall of Hossein Forouhar"
           }
         }
@@ -528,3 +499,4 @@
     }
   }
 }
+
