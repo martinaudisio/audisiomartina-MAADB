@@ -10,6 +10,7 @@ const Forum = require('../models/forum');
 exports.getAllPosts = async (req, res) => {
   try {
     const posts = await Post.find();
+    
     res.status(200).json(posts);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving posts', error });
@@ -30,7 +31,7 @@ exports.getPostById = async (req, res) => {
     }
     res.status(200).json(post);
   } catch (error) {
-    res.status(500).json({ message: 'Error retrieving post', error });
+    res.status(500).json({ message: 'Error retrieving post by ID.', error });
   }
 };
 
@@ -48,7 +49,7 @@ exports.getPostsByCreatorPersonId = async (req, res) => {
       .sort({ creationDate: -1 });  
 
     if (posts.length === 0) {
-      return res.status(404).json({ message: 'No posts found for this creator' });
+      return res.status(404).json({ message: 'No posts found for this creator ID.' });
     }
 
     
@@ -78,10 +79,9 @@ exports.getPostsByCreatorPersonId = async (req, res) => {
     res.status(200).json(postsWithForumTitle);  
   } catch (error) {
     console.error('Error retrieving posts by creator:', error);
-    res.status(500).json({ message: 'Error retrieving posts by creator', error });
+    res.status(500).json({ message: 'Error retrieving posts by creator ID.'});
   }
 };
-
 
 
 /**
@@ -94,11 +94,11 @@ exports.getPostsByLocationCountryId = async (req, res) => {
   try {
     const posts = await Post.find({ LocationCountryId: Number(req.params.locationCountryId) });
     if (posts.length === 0) {
-      return res.status(404).json({ message: 'No posts found for this location country' });
+      return res.status(404).json({ message: 'No posts found for this location country ID.' });
     }
     res.status(200).json(posts);
   } catch (error) {
-    res.status(500).json({ message: 'Error retrieving posts by location', error });
+    res.status(500).json({ message: 'Error retrieving posts by location ID.', error });
   }
 };
 
@@ -134,7 +134,7 @@ exports.getPostsByCreatorAndDate = async (req, res) => {
     .sort({ creationDate: -1 });  
 
     if (posts.length === 0) {
-      return res.status(404).json({ message: 'No posts found for this creator' });
+      return res.status(404).json({ message: 'No posts found for this creator ID after the specified date.' });
     }
     const postsWithForumTitle = await Promise.all(posts.map(async (post) => {
       const postObj = post.toObject();  
@@ -162,7 +162,7 @@ exports.getPostsByCreatorAndDate = async (req, res) => {
     res.status(200).json(postsWithForumTitle);   
   } catch (error) {
     console.error('Error retrieving posts by creator:', error);
-    res.status(500).json({ message: 'Error retrieving posts by creator', error });
+    res.status(500).json({ message: 'Error retrieving posts by creatorID and date.'});
   }
 };
 
@@ -178,11 +178,11 @@ exports.getPostsByForumId = async (req, res) => {
     try {
       const posts = await Post.find({ ContainerForumId: containerForumId });
       if (posts.length === 0) {
-        return res.status(404).json({ message: 'No posts found for this ForumId' });
+        return res.status(404).json({ message: 'No posts found for the specified forum ID.' });
       }
       res.status(200).json(posts);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'Error retrieving posts by forum' });
+      res.status(500).json({ message: 'Error occurred while retrieving posts by forum ID.' });
     }
   };

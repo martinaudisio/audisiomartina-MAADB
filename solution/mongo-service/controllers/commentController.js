@@ -30,12 +30,12 @@ exports.getCommentById = async (req, res) => {
   try {
     const comment = await Comment.findOne({ id: Number(id) });
     if (!comment) {
-      return res.status(404).json({ message: 'Comment not found' });
+      return res.status(404).json({ message: 'Comment not found.' });
     }
     res.status(200).json(comment);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error retrieving comment' });
+    res.status(500).json({ message: 'Error retrieving comment by ID.' });
   }
 };
 
@@ -49,12 +49,12 @@ exports.getCommentsByCreatorPersonId = async (req, res) => {
   try {
     const comments = await Comment.find({ CreatorPersonId: Number(creatorPersonId) });
     if (comments.length === 0) {
-      return res.status(404).json({ message: 'No comments found for this CreatorPersonId' });
+      return res.status(404).json({ message: 'No comments found for the specified person ID.' });
     }
     res.status(200).json(comments);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error retrieving comments by creator' });
+    res.status(500).json({ message: 'Error retrieving comments by creator ID.' });
   }
 };
 
@@ -68,12 +68,12 @@ exports.getCommentsByParentPostId = async (req, res) => {
   try {
     const comments = await Comment.find({ ParentPostId: Number(parentPostId) });
     if (comments.length === 0) {
-      return res.status(404).json({ message: 'No comments found for this ParentPostId' });
+      return res.status(404).json({ message: 'No comments found for the parent post ID.' });
     }
     res.status(200).json(comments);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error retrieving comments by parent post' });
+    res.status(500).json({ message: 'Error retrieving comments by parent post ID.' });
   }
 };
 
@@ -87,12 +87,12 @@ exports.getCommentsByLocationCountryId = async (req, res) => {
   try {
     const comments = await Comment.find({ LocationCountryId: Number(locationCountryId) });
     if (comments.length === 0) {
-      return res.status(404).json({ message: 'No comments found for this LocationCountryId' });
+      return res.status(404).json({ message: 'No comments found for the specified location ID.' });
     }
     res.status(200).json(comments);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error retrieving comments by location' });
+    res.status(500).json({ message: 'C' });
   }
 };
 
