@@ -12,30 +12,6 @@
         }
     ],
     "paths": {
-        "/api/post": {
-            "get": {
-                "summary": "Retrieve all posts",
-                "description": "Retrieve all posts from the database.",
-                "responses": {
-                    "200": {
-                        "description": "A list of posts",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Post"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error retrieving posts"
-                    }
-                }
-            }
-        },
         "/api/post/{id}": {
             "get": {
                 "summary": "Retrieve a post by its ID",
@@ -53,7 +29,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Post retrieved successfully",
+                        "description": "Post information.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -63,10 +39,10 @@
                         }
                     },
                     "404": {
-                        "description": "Post not found"
+                        "description": "Post not found."
                     },
                     "500": {
-                        "description": "Error retrieving post"
+                        "description": "Error retrieving post by ID."
                     }
                 }
             }
@@ -88,7 +64,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Posts retrieved successfully",
+                        "description": "A list of Posts containing all information including the forum title for the specified creator.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -101,10 +77,10 @@
                         }
                     },
                     "404": {
-                        "description": "No posts found for this creator"
+                        "description": "No posts found for this creator ID."
                     },
                     "500": {
-                        "description": "Error retrieving posts by creator"
+                        "description": "Error retrieving posts by creator ID."
                     }
                 }
             }
@@ -139,10 +115,10 @@
                         }
                     },
                     "404": {
-                        "description": "No posts found for this location"
+                        "description": "No posts found for this location country ID."
                     },
                     "500": {
-                        "description": "Error retrieving posts by location"
+                        "description": "Error retrieving posts by location ID."
                     }
                 }
             }
@@ -173,7 +149,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Posts retrieved successfully",
+                        "description": "A list of posts by the specified creator, created after January 1 of the given year, including the associated forum title.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -186,10 +162,10 @@
                         }
                     },
                     "404": {
-                        "description": "No posts found for this creator after the specified date"
+                        "description": "No posts found for this creator ID after the specified date."
                     },
                     "500": {
-                        "description": "Error retrieving posts by creator and date"
+                        "description": "Error retrieving posts by creator ID and date."
                     }
                 }
             }
@@ -211,7 +187,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Posts retrieved successfully",
+                        "description": "A list of Posts in the specified forum.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -224,34 +200,10 @@
                         }
                     },
                     "404": {
-                        "description": "No posts found for this forum"
+                        "description": "No posts found for the specified forum ID."
                     },
                     "500": {
-                        "description": "Error retrieving posts by forum"
-                    }
-                }
-            }
-        },
-        "/api/comment": {
-            "get": {
-                "summary": "Retrieve all comments",
-                "description": "Retrieve all comments from the database.",
-                "responses": {
-                    "200": {
-                        "description": "A list of comments",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Comment"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error retrieving comments"
+                        "description": "Error occurred while retrieving posts by forum ID."
                     }
                 }
             }
@@ -273,7 +225,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Comment retrieved successfully",
+                        "description": "Comment information.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -283,10 +235,10 @@
                         }
                     },
                     "404": {
-                        "description": "Comment not found"
+                        "description": "Comment not found."
                     },
                     "500": {
-                        "description": "Error retrieving comment"
+                        "description": "Error retrieving comment by ID."
                     }
                 }
             }
@@ -308,7 +260,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Comments retrieved successfully",
+                        "description": "A list of comments created by the person ID.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -321,10 +273,10 @@
                         }
                     },
                     "404": {
-                        "description": "No comments found for this creator"
+                        "description": "No comments found for the specified person ID."
                     },
                     "500": {
-                        "description": "Error retrieving comments by creator"
+                        "description": "Error retrieving comments by creator ID."
                     }
                 }
             }
@@ -332,7 +284,7 @@
         "/api/comment/parent/{parentPostId}": {
             "get": {
                 "summary": "Retrieve comments by parent post",
-                "description": "Retrieve comments by ParentPostId.",
+                "description": "Retrieve comments by Parent Post ID.",
                 "parameters": [
                     {
                         "name": "parentPostId",
@@ -346,7 +298,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Comments retrieved successfully",
+                        "description": "A list of comments that serve as replies to the specified parent post.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -359,14 +311,78 @@
                         }
                     },
                     "404": {
-                        "description": "No comments found for this parent post"
+                        "description": "No comments found for the parent post ID."
                     },
                     "500": {
-                        "description": "Error retrieving comments by parent post"
+                        "description": "Error retrieving comments by parent post ID."
                     }
                 }
             }
         },
+        "/api/comment/replyTime": {
+        "post": {
+            "summary": "Calculate reply times for comments",
+            "description": "Receives an array of comment replies and calculates the time difference in seconds between each reply and its original content.",
+            "requestBody": {
+            "required": true,
+            "content": {
+                "application/json": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                    "comments": {
+                        "type": "array",
+                        "description": "Array of comment reply objects containing replyId, originalId, and originalType.",
+                        "items": {
+                        "$ref": "#/components/schemas/CommentReplyInfo"
+                        },
+                        "example": [
+                        {
+                            "replyId": 1168231106633,
+                            "originalId": 1168231106628,
+                            "originalType": "Comment"
+                        },
+                        {
+                            "replyId": 1168231106700,
+                            "originalId": 1168231106600,
+                            "originalType": "Post"
+                        }
+                        ]
+                    }
+                    },
+                    "required": ["comments"]
+                }
+                }
+            }
+            },
+            "responses": {
+            "200": {
+                "description": "Reply times calculated successfully",
+                "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "replyTime": {
+                            "type": "number",
+                            "format": "float",
+                            "example": 142.7,
+                            "description": "Average time in seconds between replies and their original contents."
+                            }
+                        }
+                        }
+                  }
+                }
+            },
+            "400": {
+                "description": "Invalid input format"
+            },
+            "500": {
+                "description": "Internal server error"
+            }
+            }
+        }
+    },
         "/api/comment/location/{locationCountryId}": {
             "get": {
                 "summary": "Retrieve comments by location country",
@@ -384,7 +400,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Comments retrieved successfully",
+                        "description": "A collection of comments associated with the specified location identifier.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -397,10 +413,10 @@
                         }
                     },
                     "404": {
-                        "description": "No comments found for this location country"
+                        "description": "No comments found for the specified location ID."
                     },
                     "500": {
-                        "description": "Error retrieving comments by location"
+                        "description": "No comments found for the specified location ID."
                     }
                 }
             }
@@ -417,7 +433,7 @@
                         "schema": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/Person"
+                            "$ref": "#/components/schemas/PersonProfile"
                         }
                         }
                     }
@@ -463,7 +479,7 @@
                     }
                 }
             }
-        },
+            },
             "/api/person/byLocation/{id}": {
                 "get": {
                     "summary": "Retrieve a person by its location ID",
@@ -485,7 +501,7 @@
                         "content": {
                         "application/json": {
                             "schema": {
-                            "$ref": "#/components/schemas/Person"
+                            "$ref": "#/components/schemas/PersonProfile"
                             }
                         }
                         }
@@ -498,7 +514,7 @@
                     }
                 }
             }
-        },
+            },
         "/api/forum": {
             "get": {
                 "summary": "Retrieve all forums",
@@ -511,7 +527,7 @@
                         "schema": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/Forum"
+                            "$ref": "#/components/schemas/ForumInfo"
                         }
                         }
                     }
@@ -544,7 +560,7 @@
                     "content": {
                     "application/json": {
                         "schema": {
-                        "$ref": "#/components/schemas/Forum"
+                        "$ref": "#/components/schemas/ForumInfo"
                         }
                     }
                     }
@@ -592,202 +608,247 @@
                 }
                 }
             }
-        }        
+        }
     },
     "components": {
-        "schemas": {
-            "Post": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer", 
-                        "example": 1
-                    },
-                    "creationDate": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2012-10-01T12:00:00Z"
-                    },
-                    "CreatorPersonId": {
-                        "type": "integer", 
-                        "example": 14
-                    },
-                    "imageFile": {
-                        "type": "string", 
-                        "example": "photo962072674326.jpg"
-                    },
-                    "browserUsed": {
-                        "type": "string", 
-                        "example": "Firefox"
-                    },
-                    "lenght": {
-                        "type": "integer", 
-                        "example": "0"
-                    },
-                    "ContainerForumId": {
-                        "type": "integer",
-                        "example": 0
-                    },
-                    "LocationCountryId": {
-                        "type": "integer",
-                        "example": 81
-                    },
-                    "language": {
-                        "type": "string",
-                        "example": "fa"
-                    },
-                    "content": {
-                        "type": "string",
-                        "example": "This is a sample post content."
-                    }
-                }
-            },
-        "Comment": {
-                "type": "object",
-                "properties": {
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "creationDate": {
-                    "type": "string",
-                    "format": "date-time",
-                    "example": "2012-10-01T12:00:00Z"
-                },
-                "locationIP": {
-                    "type": "string",
-                    "example": "91.191.192.127"
-                },
-                "browserUsed": {
-                    "type": "string",
-                    "example": "Firefox"
-                },
-                "CreatorPersonId": {
-                    "type": "integer",
-                    "example": 14
-                },
-                "ParentPostId": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "ParentCommentId": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "lenght": {
-                    "type": "integer",
-                    "example": 34
-                },
-                "content": {
-                    "type": "string",
-                    "example": "This is a sample comment content."
-                },
-                "LocationCountryId": {
-                    "type": "integer",
-                    "example": 4
-                }
-            }
-        }, 
-        "Person": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "creationDate": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2020-01-01T12:00:00Z"
-                    },
-                    "firstName": {
-                        "type": "string",
-                        "example": "John"
-                    },
-                    "lastName": {
-                        "type": "string",
-                        "example": "Doe"
-                    },
-                    "gender": {
-                        "type": "string",
-                        "enum": [
-                            "male",
-                            "female",
-                            "other"
-                        ],
-                        "example": "male"
-                    },
-                    "birthday": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "1990-05-15T00:00:00Z"
-                    },
-                    "locationIP": {
-                        "type": "string",
-                        "example": "192.168.1.1"
-                    },
-                    "browserUsed": {
-                        "type": "string",
-                        "example": "Chrome"
-                    },
-                    "LocationCityId": {
-                        "type": "integer",
-                        "example": 100
-                    },
-                    "language": {
-                        "type": "string",
-                        "example": "en"
-                    },
-                    "email": {
-                        "type": "string",
-                        "example": "john.doe@example.com"
-                    }
-                }
-            },
-        "PersonName": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "example": "Hossein"
-                },
-                "surname": {
-                    "type": "string", 
-                    "example": "Forouhar"
-                }
-            }
+    "schemas": {
+      "CommentReplyInfo": {
+        "type": "object",
+        "description": "Details of a comment reply referencing an original content entity.",
+        "properties": {
+          "replyId": {
+            "type": "integer",
+            "description": "Unique identifier of the reply comment.",
+            "example": 1168231106633
+          },
+          "originalId": {
+            "type": "integer",
+            "description": "Unique identifier of the original content being replied to.",
+            "example": 1168231106628
+          },
+          "originalType": {
+            "type": "string",
+            "description": "Type of the original content, such as 'Comment' or 'Post'.",
+            "example": "Comment"
+          }
         },
-        "Forum": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "creationDate": {
-                    "type": "string", 
-                    "format": "date-time", 
-                    "example": "2012-10-01T12:00:00Z"
-                },
-                "title": {
-                    "type": "string",
-                    "example": "General Discussion"
-                },
-                "description": {
-                    "type": "string",
-                    "example": "A forum for general topics and discussions."
-                }
-            }
-        },
-        "ForumTitle": {
-            "type": "object",
-            "properties": {
-                "title": {
-                    "type": "string",
-                    "example": "Wall of Hossein Forouhar"
-                }
-            }
+        "required": ["replyId", "originalId", "originalType"]
+      },
+      "Post": {
+        "type": "object",
+        "description": "A user-generated post within a forum.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the post.",
+            "example": 1
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the post was created.",
+            "example": "2012-10-01T12:00:00Z"
+          },
+          "creatorPersonId": {
+            "type": "integer",
+            "description": "Identifier of the person who created the post.",
+            "example": 14
+          },
+          "imageFile": {
+            "type": "string",
+            "description": "Optional image file attached to the post.",
+            "example": "photo962072674326.jpg"
+          },
+          "browserUsed": {
+            "type": "string",
+            "description": "Browser used to create the post.",
+            "example": "Firefox"
+          },
+          "length": {
+            "type": "integer",
+            "description": "Length of the post content in characters.",
+            "example": 0
+          },
+          "forumId": {
+            "type": "integer",
+            "description": "Identifier of the forum containing this post.",
+            "example": 0
+          },
+          "countryId": {
+            "type": "integer",
+            "description": "Identifier of the country where the post was made.",
+            "example": 81
+          },
+          "language": {
+            "type": "string",
+            "description": "Language of the post content.",
+            "example": "fa"
+          },
+          "content": {
+            "type": "string",
+            "description": "Textual content of the post.",
+            "example": "This is a sample post content."
+          }
         }
+      },
+      "Comment": {
+        "type": "object",
+        "description": "A comment posted by a user on a post or another comment.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier of the comment.",
+            "example": 1
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the comment was created.",
+            "example": "2012-10-01T12:00:00Z"
+          },
+          "locationIP": {
+            "type": "string",
+            "description": "IP address of the user who created the comment.",
+            "example": "91.191.192.127"
+          },
+          "browserUsed": {
+            "type": "string",
+            "description": "Browser used to post the comment.",
+            "example": "Firefox"
+          },
+          "creatorPersonId": {
+            "type": "integer",
+            "description": "Identifier of the person who wrote the comment.",
+            "example": 14
+          },
+          "parentPostId": {
+            "type": "integer",
+            "description": "Identifier of the post this comment replies to, if applicable.",
+            "example": 0
+          },
+          "parentCommentId": {
+            "type": "integer",
+            "description": "Identifier of the comment this comment replies to, if applicable.",
+            "example": 0
+          },
+          "length": {
+            "type": "integer",
+            "description": "Length of the comment in characters.",
+            "example": 34
+          },
+          "content": {
+            "type": "string",
+            "description": "Textual content of the comment.",
+            "example": "This is a sample comment content."
+          },
+          "countryId": {
+            "type": "integer",
+            "description": "Identifier of the country where the comment was posted.",
+            "example": 4
+          }
+        }
+      },
+      "PersonProfile": {
+        "type": "object",
+        "description": "Profile data of a user registered in the platform.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2020-01-01T12:00:00Z"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "gender": {
+            "type": "string",
+            "enum": ["male", "female", "other"],
+            "example": "male"
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date-time",
+            "example": "1990-05-15T00:00:00Z"
+          },
+          "locationIP": {
+            "type": "string",
+            "example": "192.168.1.1"
+          },
+          "browserUsed": {
+            "type": "string",
+            "example": "Chrome"
+          },
+          "cityId": {
+            "type": "integer",
+            "example": 100
+          },
+          "language": {
+            "type": "string",
+            "example": "en"
+          },
+          "email": {
+            "type": "string",
+            "example": "john.doe@example.com"
+          }
+        }
+      },
+      "PersonName": {
+        "type": "object",
+        "description": "Basic name information of a person.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Hossein"
+          },
+          "surname": {
+            "type": "string",
+            "example": "Forouhar"
+          }
+        }
+      },
+      "ForumInfo": {
+        "type": "object",
+        "description": "Basic metadata about a forum.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2012-10-01T12:00:00Z"
+          },
+          "title": {
+            "type": "string",
+            "example": "General Discussion"
+          },
+          "description": {
+            "type": "string",
+            "example": "A forum for general topics and discussions."
+          }
+        }
+      },
+      "ForumTitle": {
+        "type": "object",
+        "description": "Title of a forum or discussion wall.",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Wall of Hossein Forouhar"
+          }
+        }
+      }
     }
-  }
 }
+}
+
