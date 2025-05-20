@@ -58,8 +58,8 @@ router.get('/byLocation/id', async (req, res) => {
       const response = await axios.get(`http://localhost:3001/api/person/byLocation/${id}`);
       const peopleList = response.data;
 
-      if (!Array.isArray(peopleList)) {
-      return res.status(500).json({ message: 'Expected an array of people from the server' });}
+      if (peopleList.length == 0) {
+      return res.status(404).json({ message: 'No person found for the specified location.' });}
     
       console.log('Received response:', response.data);
       res.status(200).json(peopleList);
@@ -67,41 +67,11 @@ router.get('/byLocation/id', async (req, res) => {
   
     } catch (err) {
       console.error('Error fetching person:', err.message);
-      res.status(500).send('An error occurred while loading person by location');
+      res.status(500).send('An error occurred while loading person by location.');
     }
   });
   
 
-/**
- * Route serving the list of known people for a given person ID.
- * @name get/known
- * @function
- * @async
- * @param {string} path - Express path '/known'.
- * @param {callback} middleware - Express middleware function handling the GET request.
- * @returns {Object} - If successful, returns a status of 200 and a JSON object containing the list of known people.
- * If there is an error, returns a status of 500 with an appropriate error message.
- */
-
-router.get('/known/id', async (req, res) => {
-
-    const id = req.query.personId;
-    try {
-        console.log(`Fetching all known people  from http://localhost:3002/api/people/known/${id}`);
-
-        // Fetch known people data from the API
-        const response = await axios.get(`http://localhost:3002/api/people/known/${id}`);
-        console.log('Received response:', response.data);
-
-        // Send the game data as the response
-        res.status(200).json(response.data);
-
-    } catch (err) {
-        // Log any errors and send a response indicating an error occurred
-        console.error('Error fetching person known:', err.message);
-        res.status(500).send('An error occurred while loading person known by ID');
-    }
-});
 
 
 /**
@@ -127,6 +97,11 @@ router.get('/byLocation/:locId/byTag/:tagId', async (req, res) => {
         const response = await axios.get(`http://localhost:3002/api/people/byLocation/${locationId}/byTag/${tagId}`);
         console.log('Received response:', response.data);
 
+        if(response.data.length == 0){
+            res.status(404).send('No person found for the specified tag and location.');
+      
+        }
+
         // Send the people data as the response
         res.status(200).json(response.data);
 
@@ -137,6 +112,40 @@ router.get('/byLocation/:locId/byTag/:tagId', async (req, res) => {
     }
 });
 
+/**
+ * Route serving the list of known people for a given person ID.
+ * @name get/known
+ * @function
+ * @async
+ * @param {string} path - Express path '/known'.
+ * @param {callback} middleware - Express middleware function handling the GET request.
+ * @returns {Object} - If successful, returns a status of 200 and a JSON object containing the list of known people.
+ * If there is an error, returns a status of 500 with an appropriate error message.
+ */
+
+router.get('/known/id', async (req, res) => {
+
+    const id = req.query.personId;
+    try {
+        console.log(`Fetching all known people  from http://localhost:3002/api/people/known/${id}`);
+
+        // Fetch known people data from the API
+        const response = await axios.get(`http://localhost:3002/api/people/known/${id}`);
+        console.log('Received response:', response.data);
+
+        if(response.data.length == 0){
+            res.status(404).send('No known person found for the specified ID.');
+        }
+
+        // Send the game data as the response
+        res.status(200).json(response.data);
+
+    } catch (err) {
+        // Log any errors and send a response indicating an error occurred
+        console.error('Error fetching person known:', err.message);
+        res.status(500).send('An error occurred while loading person known by ID');
+    }
+});
 
 /**
  * Route serving the list of friends-of-friends (FOF) for a given person ID.
@@ -161,6 +170,10 @@ router.get('/fof/id', async (req, res) => {
 
         const totalFoF = Array.isArray(response.data) ? response.data.length : 0;
 
+        if(response.data.length == 0){
+            res.status(404).send('No friend of friend found for the specified user ID.');
+        }
+        
         // Send response with data and total count
         res.status(200).json({
             data: response.data,
@@ -170,7 +183,7 @@ router.get('/fof/id', async (req, res) => {
     } catch (err) {
         // Log any errors and send a response indicating an error occurred
         console.error('Error fetching fof:', err.message);
-        res.status(500).send('An error occurred while loading fof by ID');
+        res.status(500).send('An error occurred while loading friend of friend by ID.');
     }
 });
 

@@ -17,8 +17,6 @@ const axios = require('axios');
  */
 router.get('/avgAnswer/id', async (req, res) => {
     const id = req.query.personId;
-    console.log(`--- GET /avgAnswer/id ---`);
-    console.log(`Query param personId: ${id}`);
 
     try {
         const urlReplies = `http://localhost:3002/api/comment/repliesToOthers/${id}`;
@@ -29,8 +27,8 @@ router.get('/avgAnswer/id', async (req, res) => {
        
 
         if (!Array.isArray(comments) || comments.length === 0) {
-            console.warn('Nessun commento trovato per la persona con ID:', id);
-            return res.status(200).json({ averageReplyTime: null });
+            console.warn('No comments found for person with ID:', id);
+            return res.status(404).json({ message: 'No comments found for the specified user ID.' });
         }
 
         const replyTimeUrl = 'http://localhost:3001/api/comment/replyTime';
@@ -38,6 +36,11 @@ router.get('/avgAnswer/id', async (req, res) => {
 
         const replyTimeResponse = await axios.post(replyTimeUrl, { comments });
         const replyTimes = replyTimeResponse.data.replyTimes;
+
+        
+        if (!Array.isArray(replyTimes) || replyTimes.length === 0) {
+            return res.status(404).json({ message: 'No replies found for the specified user ID.' });
+        }
 
 
         console.log('Risposta da replyTime:', replyTimes);
@@ -68,12 +71,12 @@ router.get('/avgAnswer/id', async (req, res) => {
         
 
     } catch (err) {
-        console.error('Errore durante il fetch o la richiesta POST:', err.message);
+        console.error('Error during FETCH:', err.message);
         if (err.response) {
             console.error('Dettaglio errore response.data:', err.response.data);
             console.error('Status code errore:', err.response.status);
         }
-        res.status(500).send('Errore nel caricamento della risposta media');
+        res.status(500).send('An error occurred while loading the average reply time.');
     }
 });
 

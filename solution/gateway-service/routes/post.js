@@ -16,53 +16,54 @@ router.get('/creator/id', async (req, res) => {
     console.log(`Fetching content by creator ID ${creatorId}`);
 
     try {
-        // 1. Recupera i contenuti (post/commenti) dell'utente
         const contentResponse = await axios.get(`http://localhost:3002/api/post/byUser/${creatorId}`);
-        const contents = contentResponse.data.data;
+        const contents = contentResponse.data;
+        console.log("Content Response:", contentResponse);
 
-        // 2. Recupera le informazioni del creatore
-        const personResponse = await axios.get(`http://localhost:3001/api/person/${creatorId}`);
-        const person = personResponse.data;
+        if(contents.length == 0){
+            res.status(404).json({ message: 'No content found for the specified user ID'});
+        }
 
-        // 3. Arricchisci i contenuti a seconda del tipo
+        let person;
+        try{
+            const personResponse = await axios.get(`http://localhost:3001/api/person/${creatorId}`);
+            const person = personResponse.data;
+            console.log("Person Response:", person);
+        }catch (err) {
+            return res.status(404).json({ message: 'Creator not found' });
+        }
+        
+        
         const enrichedContents = await Promise.all(contents.map(async (content) => {
             if (content.type === 'Post') {
-                // Aggiungi il titolo del forum
                 try {
                     const forumResponse = await axios.get(`http://localhost:3002/api/post/ForumTitle/${content.contentId}`);
                     const forumTitle = forumResponse.data || 'Unknown Forum';
                     return { ...content, forumTitle };
                 } catch (forumErr) {
-                    return { ...content, forumTitle: 'Forum non trovato' };
+                    return { ...content, forumTitle: 'Forum not found' };
                 }
 
             } else if (content.type === 'Comment') {
-                // Aggiungi i dati del post padre
                 try {
                     const parentPostResponse = await axios.get(`http://localhost:3002/api/comment/replies/${content.contentId}`);
                     const parentPost = parentPostResponse.data || {};
                     return { ...content, parentPost };
                 } catch (err) {
-                    return { ...content, parentPost: { error: 'Parent post non trovato' } };
+                    return { ...content, parentPost: { error: 'Parent post not found' } };
                 }
             }
-
-            // Se il tipo è sconosciuto, restituiscilo invariato
+            
             return content;
         }));
 
-        // 4. Restituisci creatore e contenuti arricchiti
         res.status(200).json({
             creator: person,
             content: enrichedContents
         });
 
     } catch (err) {
-        res.status(500).json({
-            message: 'Errore durante il recupero dei contenuti',
-            error: err.message,
-            stack: err.stack
-        });
+        res.status(500).json({message: 'An error occurred while loading content by user ID.'});
     }
 });
 
@@ -82,6 +83,10 @@ router.get('/byOrganization/:type/:orgId', async (req, res) => {
         console.log('Received response:', people.data);
         const peopleData = people.data
 
+        if (!Array.isArray(peopleData) || peopleData.length === 0) {
+            return res.status(404).json({ message: 'No person found for the given organization.' });
+        }
+
          const peopleWithPosts = await Promise.all(
             peopleData.map(async (person) => {
                 const { id, since } = person;
@@ -95,7 +100,7 @@ router.get('/byOrganization/:type/:orgId', async (req, res) => {
                         posts: posts || []
                     };
                 } catch (postError) {
-                    console.error(`Error fetching posts for person ID ${id}:`, postError.message);
+                    console.error(`Error fetching posts for person ID.`);
                     return {
                         ...person,
                         posts: []
@@ -110,7 +115,7 @@ router.get('/byOrganization/:type/:orgId', async (req, res) => {
     } catch (err) {
         // Log any errors and send a response indicating an error occurred
         console.error('Error fetching post by oragnization:', err.message);
-        res.status(500).send('An error occurred while loading post by oragnization');
+        res.status(500).send('An error occurred while loading post by people oragnization.');
     }
 });
 
