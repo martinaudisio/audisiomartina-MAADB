@@ -288,7 +288,7 @@
             }
           },
           "404": {
-            "description": "o person found dor the specified organization ID."
+            "description": "No person found dor the specified organization ID."
           },
           "500": {
             "description": "An error occurred while retriving people by organization ID."
