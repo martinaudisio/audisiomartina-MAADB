@@ -124,8 +124,8 @@ async function getPersonsByOrganization(orgId, orgType) {
 
     if (orgType === 'Company') {
       query = `
-          MATCH (p:Person)-[r:WORKS_AT]->(o:Organization {id: $orgId})
-          RETURN p.id AS id, p.firstName AS name, p.lastName AS surname, r.workFrom AS since
+          MATCH (p:Person)-[r:WORK_AT]->(o:Organization {id: $orgId})
+          RETURN p.id AS id, p.firstName AS name, p.lastName AS surname, r.workFrom.year AS since
       `;
     } else if (orgType === 'University') {
         query = `
@@ -138,26 +138,15 @@ async function getPersonsByOrganization(orgId, orgType) {
         const result = await session.run(query, params);
 
         if(result.records.length == 0){
-          result.status(404).json({message: 'No person found dor the specified organization ID.'})
-        }
+            return []
+          }
 
-        return result.records.map(record => {
-            const neo4jId = record.get('id');
-            const rawSince = record.get('since');
-            const id = typeof neo4jId === 'object' && neo4jId.low !== undefined
-                ? neo4jId.low + (neo4jId.high * Math.pow(2, 32))
-                : neo4jId;
-             const since = typeof rawSince === 'object' && rawSince.low !== undefined
-                ? rawSince.low + rawSince.high * Math.pow(2, 32)
-                : rawSince;
-
-            return {
-                id,
-                name: record.get('name'),
-                surname: record.get('surname'),
-                since
-            };
-        });
+        return result.records.map(record => ({
+            id: record.get('id').toNumber ? record.get('id').toNumber() : record.get('id'),
+            name: record.get('name'),
+            surname: record.get('surname'),
+            since: record.get('since').toNumber ? record.get('since').toNumber() : record.get('since')
+        }));
     } catch (error) {
         console.error('An error occurred while retriving people by organization ID.');
         throw error;
