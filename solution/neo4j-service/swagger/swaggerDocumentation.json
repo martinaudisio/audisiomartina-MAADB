@@ -15,7 +15,7 @@
     "/api/comment/repliesToOthers/{userId}": {
       "get": {
         "summary": "Retrieve all the comments made by the specified user that are replies",
-        "description": "Retrieve all the comments made by the specified user that are replies to other Post/Comment , using the relationship REPLIES.",
+        "description": "Retrieve all the comments made by the specified user that are replies to other Comment , using the relationship REPLY_OF.",
         "parameters": [
           {
             "name": "userId",
@@ -340,7 +340,7 @@
     "schemas": {
       "ReplyInfo": {
         "type": "object",
-        "description": "Represents a reply to a content, such as a comment or post.",
+        "description": "Represents a reply to a comment.",
         "properties": {
           "replyId": {
             "type": "integer",
@@ -349,13 +349,8 @@
           },
           "originalId": {
             "type": "integer",
-            "description": "ID of the original content to which this is a reply.",
+            "description": "ID of the original comment to which this is a reply.",
             "example": 1168231106628
-          },
-          "originalType": {
-            "type": "string",
-            "description": "Type of the original content (e.g., Comment, Post).",
-            "example": "Comment"
           }
         }
       },
