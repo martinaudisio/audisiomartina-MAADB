@@ -126,7 +126,7 @@
         "/api/post/creator/{id}/date/{year}": {
             "get": {
                 "summary": "Retrieve posts by creator and date",
-                "description": "Retrieves posts for a specific creator that were created after January 1 of the specified year.",
+                "description": "Retrieves the last post for a specific creator checking if it was created after January 1 of the specified year.",
                 "parameters": [
                     {
                         "name": "id",
@@ -149,7 +149,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A list of posts by the specified creator, created after January 1 of the given year, including the associated forum title.",
+                        "description": "The last post by the specified creator, including the associated forum title.",
                         "content": {
                             "application/json": {
                                 "schema": {
