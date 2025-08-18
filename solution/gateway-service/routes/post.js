@@ -70,6 +70,16 @@ router.get('/creator/id', async (req, res) => {
 
 
 
+/**
+ * Route that retrieves people affiliated with a specified organization, along with their posts created since their affiliation date.
+ * @name GET/byOrganization/:type/:orgId
+ * @function
+ * @async
+ * @param {string} path - Express path '/byOrganization/:type/:orgId'.
+ * @param {callback} middleware - Express middleware function handling the GET request.
+ * @returns {Object[]} - On success, returns status 200 and an array of person objects, each including their last post since the affiliation date.
+ * If no people are found, returns status 404 with a message. If an error occurs, returns status 500 with an error message.
+ */
 router.get('/byOrganization/:type/:orgId', async (req, res) => {
     // Extract the organization ID from the request parameters
     const id = req.params.orgId;
@@ -100,7 +110,7 @@ router.get('/byOrganization/:type/:orgId', async (req, res) => {
                         posts: posts || []
                     };
                 } catch (postError) {
-                    console.error(`Error fetching posts for person ID.`);
+                    console.error(`Error fetching posts for person ID ${id}.`);
                     return {
                         ...person,
                         posts: []
