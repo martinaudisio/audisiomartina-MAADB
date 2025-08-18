@@ -116,17 +116,11 @@ exports.calculateReplyTimes = async (comments) => {
 
   const replyTimes = [];
 
-  for (const { replyId, originalId, originalType } of comments) {
+  for (const { replyId, originalId } of comments) {
     try {
-      const OriginalModel = models[originalType];
-      if (!OriginalModel) {
-        console.warn(`Unknown originalType: ${originalType}`);
-        continue;
-      }
-
       const [replyDoc, originalDoc] = await Promise.all([
         Comment.findOne({ id: replyId }).select('creationDate'),
-        OriginalModel.findOne({ id: originalId }).select('creationDate')
+        Comment.findOne({ id: originalId }).select('creationDate')
       ]);
 
       const replyTime = new Date(replyDoc.creationDate);
