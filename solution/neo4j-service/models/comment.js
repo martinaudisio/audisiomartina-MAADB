@@ -15,9 +15,9 @@ async function getRepliesToOthers(userId) {
     const session = driver.session();
   
     const query = `
-      MATCH (reply:Comment)-[:HAS_CREATOR]->(author:Person {id: ${userId}})
-      MATCH (reply)-[:REPLY_OF]->(original)
-      RETURN reply.id AS replyId, original.id AS originalId, labels(original)[0] AS originalType
+      MATCH (reply:Comment)-[:HAS_CREATOR]->(author:Person {id: $userId})
+      MATCH (reply)-[:REPLY_OF]->(original:Comment)   
+      RETURN reply.id AS replyId, original.id AS originalId
     `;
   
     try {
@@ -35,15 +35,13 @@ async function getRepliesToOthers(userId) {
       const replies = result.records.map((record, index) => {
         const replyInt = record.get('replyId');
         const originalInt = record.get('originalId');
-        const originalType = record.get('originalType');
       
         const replyId = replyInt.low + (replyInt.high * Math.pow(2, 32));
         const originalId = originalInt.low + (originalInt.high * Math.pow(2, 32));
       
         return {
           replyId,
-          originalId,
-          originalType
+          originalId
         };
       });
       

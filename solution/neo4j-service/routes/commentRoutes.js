@@ -11,7 +11,7 @@ const router = express.Router();
 router.get('/repliesToOthers/:userId', async (req, res) => {
   const userId = Number(req.params.userId);
 
-  console.log(`API call: GET /repliesToOthers/${userId}`);
+  //console.log(`API call: GET /repliesToOthers/${userId}`);
   const result = await getRepliesToOthers(userId);
   console.log(`Sending response with status ${result.status}`);
   res.status(result.status).json(result.data || { message: result.message });
@@ -32,7 +32,7 @@ router.get('/repliesToOthers/:userId', async (req, res) => {
 router.get('/replies/:commentId', async (req, res) => {
   const commentId = Number(req.params.commentId);
 
-  console.log(`API call: GET /replies/${commentId}`);
+ // console.log(`API call: GET /replies/${commentId}`);
   const result = await getOriginalMessageByComment(commentId);
   console.log(`Sending response with status ${result.status}`);
   res.status(result.status).json(result.data || { message: result.message });
