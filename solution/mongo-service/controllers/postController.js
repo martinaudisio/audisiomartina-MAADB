@@ -104,12 +104,11 @@ exports.getPostsByLocationCountryId = async (req, res) => {
 
 
 /**
- * Retrieves posts for a specific creator that were created after the beginning of a given year.
+ * Retrieves the last post for a specific creator checking if was created after the beginning of a given year.
  *
  * The function extracts the target year from req.params.year and constructs a threshold date 
- * (January 1 of that year). It then queries for posts that belong to the creator identified 
- * by req.params.id and whose creationDate is greater than the threshold date. The results are 
- * sorted in descending order of creationDate.
+ * (January 1 of that year). It then queries for the last post that belong to the creator identified 
+ * by req.params.id.
  *
  * @async
  * @function getPostsByCreatorAndDate
@@ -126,40 +125,32 @@ exports.getPostsByCreatorAndDate = async (req, res) => {
     const year = Number(req.params.year);
     const dateThreshold = new Date(year, 0, 1);
 
-    console.log('Fetching posts for CreatorPersonId:', req.params.id);
-    const posts = await Post.find({ 
+    console.log('Fetching latest post for CreatorPersonId:', req.params.id);
+    const post = await Post.findOne({ 
       CreatorPersonId: Number(req.params.id),
-      creationDate: { $gt: dateThreshold} 
-     })
-    .sort({ creationDate: -1 });  
+      creationDate: { $gt: dateThreshold }
+    }).sort({ creationDate: -1 });
 
-    if (posts.length === 0) {
-      return res.status(404).json({ message: 'No posts found for this creator ID after the specified date.' });
+    // Se non c'è nessun post, restituisci array vuoto
+    if (!post) {
+      return res.status(200).json([]);
     }
-    const postsWithForumTitle = await Promise.all(posts.map(async (post) => {
-      const postObj = post.toObject();  
-      if (!postObj.ContainerForumId) {
-        return {
-          ...postObj,
-          forumTitle: 'No forum associated',  
-        };
-      }
+
+    let forumTitle = 'No forum associated';
+    if (post.ContainerForumId) {
       try {
-        const forum = await Forum.findOne({id: Number(postObj.ContainerForumId)});
-        return {
-          ...postObj,
-          forumTitle: forum ? forum.title : 'Forum not found',  
-        };
+        const forum = await Forum.findOne({ id: Number(post.ContainerForumId) });
+        forumTitle = forum ? forum.title : 'Forum not found';
       } catch (err) {
         console.error('Error fetching forum:', err);
-        return {
-          ...postObj,
-          forumTitle: 'Error fetching forum',  
-        };
+        forumTitle = 'Error fetching forum';
       }
-    }));
+    }
 
-    res.status(200).json(postsWithForumTitle);   
+    const postObj = post.toObject();
+    postObj.forumTitle = forumTitle;
+
+    res.status(200).json([postObj]);
   } catch (error) {
     console.error('Error retrieving posts by creator:', error);
     res.status(500).json({ message: 'Error retrieving posts by creatorID and date.'});
