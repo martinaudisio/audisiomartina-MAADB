@@ -339,7 +339,7 @@
     "/post/byOrganization/{type}/{orgId}": {
       "get": {
         "summary": "Get content by organization",
-        "description": "Retrieves people associated with a specific organization and for each person, fetches their posts since a given date.",
+        "description": "Retrieves people associated with a specific organization and for each person, fetches their last post.",
         "parameters": [
           {
             "name": "type",
