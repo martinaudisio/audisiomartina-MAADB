@@ -37,20 +37,15 @@ router.get('/avgAnswer/id', async (req, res) => {
         const replyTimeResponse = await axios.post(replyTimeUrl, { comments });
         const replyTimes = replyTimeResponse.data.replyTimes;
 
-        
-        if (!Array.isArray(replyTimes) || replyTimes.length === 0) {
-            return res.status(404).json({ message: 'No replies found for the specified user ID.' });
-        }
-
-
-        console.log('Risposta da replyTime:', replyTimes);
-
-        if (!Array.isArray(replyTimes) || replyTimes.length === 0) {
+         if (!Array.isArray(replyTimes) || replyTimes.length === 0) {
             return res.status(200).json({ averageReplyTime: null });
         }
 
+        console.log('Risposta da replyTime:', replyTimes);
+
         const sum = replyTimes.reduce((acc, val) => acc + val, 0);
         const avg = sum / replyTimes.length;
+        const avgRounded = parseFloat(avg.toFixed(2));
 
         console.log('Tempo medio di risposta in secondi:', avg);
         const seconds = Math.floor(avg);
@@ -60,7 +55,7 @@ router.get('/avgAnswer/id', async (req, res) => {
         const remainingSeconds = seconds % 60;
 
         res.status(200).json({
-            averageReplyTimeSeconds: avg,
+            averageReplyTimeSeconds: avgRounded,
             formatted: {
                 days,
                 hours,
