@@ -547,7 +547,7 @@
         "type": "object",
         "description": "Structure representing a comment or a post with metadata.",
         "properties": {
-          "contentId": {
+          "id": {
             "type": "number",
             "description": "Unique ID of the content (post or comment).",
             "example": 1168231107465
@@ -567,6 +567,12 @@
             "type": "string",
             "description": "Textual content.",
             "example": "thx"
+          },
+            "forumTitle": {
+            "type": "string",
+            "description": "Title of the forum where the content was posted.",
+            "example": "Album 1 of Jun Li",
+            "mandatory": false
           },
           "parentPost": {
             "$ref": "#/components/schemas/ParentPost"
