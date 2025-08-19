@@ -28,7 +28,11 @@ exports.getAllComments = async (req, res) => {
 exports.getCommentById = async (req, res) => {
   const { id } = req.params;
   try {
-    const comment = await Comment.findOne({ id: Number(id) });
+    const comment = await Comment.findOne(
+      { id: Number(id) },
+      { id: 1, type: 1, creationDate: 1, content: 1, _id: 0 }
+    );
+    
     if (!comment) {
       return res.status(404).json({ message: 'Comment not found.' });
     }

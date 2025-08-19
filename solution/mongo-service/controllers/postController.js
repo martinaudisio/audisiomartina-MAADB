@@ -25,7 +25,10 @@ exports.getAllPosts = async (req, res) => {
  */
 exports.getPostById = async (req, res) => {
   try {
-    const post = await Post.findOne({id: Number(req.params.id)});
+    const post = await Post.findOne(
+      { id: Number(id) },
+      { id: 1, type: 1, creationDate: 1, content: 1, _id: 0 }
+    );
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }
