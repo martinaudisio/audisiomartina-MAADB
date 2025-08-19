@@ -13,60 +13,76 @@ const axios = require('axios');
  */
 router.get('/creator/id', async (req, res) => {
     const creatorId = req.query.id;
-    console.log(`Fetching content by creator ID ${creatorId}`);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    console.log(`Fetching content IDs by creator ID ${creatorId}`);
 
     try {
+        // Get only IDs and types
         const contentResponse = await axios.get(`http://localhost:3002/api/post/byUser/${creatorId}`);
-        const contents = contentResponse.data;
-        console.log("Content Response:", contentResponse);
-
-        if(contents.length == 0){
-            res.status(404).json({ message: 'No content found for the specified user ID'});
+        const contents = contentResponse.data; // [{ contentId, type }]
+        console.log('Get only IDs and types:', contents);
+        if (!Array.isArray(contents) || contents.length === 0) {
+            return res.status(404).json({ message: 'No content found for the specified user ID' });
         }
 
+        // Pagination logic
+        const total = contents.length;
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedContents = contents.slice(startIndex, endIndex);
+
+        // Fetch person info
         let person;
-        try{
+        try {
             const personResponse = await axios.get(`http://localhost:3001/api/person/${creatorId}`);
-            const person = personResponse.data;
-            console.log("Person Response:", person);
-        }catch (err) {
+            person = personResponse.data;
+            console.log('Fetch person info:', person);
+        } catch (err) {
             return res.status(404).json({ message: 'Creator not found' });
         }
-        
-        
-        const enrichedContents = await Promise.all(contents.map(async (content) => {
-            if (content.type === 'Post') {
-                try {
-                    const forumResponse = await axios.get(`http://localhost:3002/api/post/ForumTitle/${content.contentId}`);
-                    const forumTitle = forumResponse.data || 'Unknown Forum';
-                    return { ...content, forumTitle };
-                } catch (forumErr) {
-                    return { ...content, forumTitle: 'Forum not found' };
-                }
 
-            } else if (content.type === 'Comment') {
+        // Fetch details for each content in parallel
+        const enrichedContents = await Promise.all(paginatedContents.map(async (content) => {
+            let contentDetails;
+            if (content.type === 'Post') {
+                // Get post details
+                const postRes = await axios.get(`http://localhost:3001/api/post/${content.contentId}`);
+                contentDetails = postRes.data;
+
+                // Get forum title
                 try {
-                    const parentPostResponse = await axios.get(`http://localhost:3002/api/comment/replies/${content.contentId}`);
-                    const parentPost = parentPostResponse.data || {};
-                    return { ...content, parentPost };
-                } catch (err) {
-                    return { ...content, parentPost: { error: 'Parent post not found' } };
+                    const forumRes = await axios.get(`http://localhost:3002/api/post/ForumTitle/${content.contentId}`);
+                    contentDetails.forumTitle = forumRes.data || 'Unknown Forum';
+                } catch {
+                    contentDetails.forumTitle = 'Forum not found';
+                }
+            } else if (content.type === 'Comment') {
+                // Get comment details
+                const commentRes = await axios.get(`http://localhost:3001/api/comment/${content.id}`);
+                contentDetails = commentRes.data;
+
+                // Get parent post/replies
+                try {
+                    const parentRes = await axios.get(`http://localhost:3002/api/comment/replies/${content.id}`);
+                    contentDetails.parentPost = parentRes.data || {};
+                } catch {
+                    contentDetails.parentPost = { error: 'Parent post not found' };
                 }
             }
-            
-            return content;
+            return { ...content, ...contentDetails };
         }));
 
         res.status(200).json({
             creator: person,
-            content: enrichedContents
+            content: enrichedContents,
+            pagination: { page, limit, total }
         });
 
     } catch (err) {
-        res.status(500).json({message: 'An error occurred while loading content by user ID.'});
+        res.status(500).json({ message: 'An error occurred while loading content by user ID.' });
     }
 });
-
 
 
 
