@@ -2,60 +2,54 @@ const driver = require('../config/neo4j');
 const { formatDate } = require('../utils/utils');
 
 /**
- * Retrieves all posts and comments created by a specific user.
+ * Retrieves all content IDs and types created by a specific user.
  *
  * @param {number} userId - The ID of the user (Person node).
- * @returns {Promise<{ status: number, data?: Array<Object>, message?: string }>}
+ * @returns {Promise<{ status: number, data?: Array<{ id: number, type: string }>, message?: string }>}
  */
 async function getContentByUser(userId) {
     const session = driver.session();
     const query = `
       MATCH (content)-[:HAS_CREATOR]->(p:Person {id: $userId})
       WHERE content:Post OR content:Comment
-      RETURN content, 
-             labels(content) AS contentType
-      ORDER BY content.creationDate DESC
+      RETURN content.id AS id, labels(content) AS contentType
     `;
-  
-    try {
-      const result = await session.run(query, { userId });
-      
-      if (result.records.length === 0) {
-        return {
-          status: 404,
-          message: `No content found for the specified user ID.`
-        };
-    }
 
-  
-      const contents = result.records.map(record => {
-        const content = record.get('content').properties;
-        const contentType = record.get('contentType')[0];
-        
-        // Convert Neo4j Long integer to standard JavaScript number
-        const newId = content.id.low + (content.id.high * Math.pow(2, 32));
-        
+    try {
+        const result = await session.run(query, { userId });
+
+        if (result.records.length === 0) {
+            return {
+                status: 404,
+                message: `No content found for the specified user ID.`
+            };
+        }
+
+        const contents = result.records.map(record => {
+            const neo4jId = record.get('id');
+            const id = typeof neo4jId === 'object' && neo4jId.low !== undefined
+                ? neo4jId.low + (neo4jId.high * Math.pow(2, 32))
+                : neo4jId;
+            const type = record.get('contentType')[0];
+
+            return {
+                id,
+                type
+            };
+        });
+
         return {
-          contentId: newId,
-          type: contentType,
-          creationDate: formatDate(content.creationDate),
-          content: content.content, 
-          
+            status: 200,
+            data: contents
         };
-      });
-  
-      return { 
-        status: 200, 
-        data: contents 
-      };
-  
+
     } catch (error) {
-      return {
-        status: 500,
-        message: 'Error retrieving content for the user.'
-      };
+        return {
+            status: 500,
+            message: 'Error retrieving content for the user.'
+        };
     } finally {
-      await session.close();
+        await session.close();
     }
 }
 
