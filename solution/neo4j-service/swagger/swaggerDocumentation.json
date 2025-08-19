@@ -87,8 +87,8 @@
     },
     "/api/post/byUser/{userId}": {
       "get": {
-        "summary": "Retrieve all messages authored by a specific user",
-        "description": "Retrieves all posts and comments created by the specified user.",
+        "summary": "Retrieve all contents IDs authored by a specific user",
+        "description": "Retrieves all content IDs and types created by a specific user.",
         "parameters": [
           {
             "name": "userId",
@@ -108,7 +108,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object", 
+                    "type": "object",
                     "$ref": "#/components/schemas/ContentItem"
                   }
                 }
@@ -145,7 +145,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string", 
+                  "type": "string",
                   "$ref": "#/components/schemas/ForumTitleOnly"
                 }
               }
@@ -183,7 +183,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object", 
+                    "type": "object",
                     "$ref": "#/components/schemas/PersonBasic"
                   }
                 }
@@ -231,7 +231,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object", 
+                    "type": "object",
                     "$ref": "#/components/schemas/PersonBasic"
                   }
                 }
@@ -258,7 +258,10 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": ["Company", "University"]
+              "enum": [
+                "Company",
+                "University"
+              ]
             },
             "description": "The type of organization (Company or University)."
           },
@@ -280,7 +283,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object", 
+                    "type": "object",
                     "$ref": "#/components/schemas/PersonInOrganization"
                   }
                 }
@@ -319,7 +322,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object", 
+                    "type": "object",
                     "$ref": "#/components/schemas/PersonWithMutualFriends"
                   }
                 }
@@ -384,7 +387,7 @@
         "type": "object",
         "description": "Represents a generic content item, such as a post or a comment.",
         "properties": {
-          "contentId": {
+          "id": {
             "type": "integer",
             "description": "Unique identifier of the content.",
             "example": 893353197746
@@ -393,17 +396,6 @@
             "type": "string",
             "description": "Type of content (e.g., Post, Comment).",
             "example": "Post"
-          },
-          "creationDate": {
-            "type": "string",
-            "format": "date-time",
-            "description": "The ISO 8601 date and time when the content was created.",
-            "example": "2012-03-10T06:42:23"
-          },
-          "content": {
-            "type": "string",
-            "description": "The body text of the content.",
-            "example": "About Woodrow Wilson"
           }
         }
       },
@@ -494,4 +486,3 @@
     }
   }
 }
-
