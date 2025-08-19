@@ -47,12 +47,13 @@ router.get('/creator/id', async (req, res) => {
             let contentDetails;
             if (content.type === 'Post') {
                 // Get post details
-                const postRes = await axios.get(`http://localhost:3001/api/post/${content.contentId}`);
+                const postRes = await axios.get(`http://localhost:3001/api/post/${content.id}`);
+                console.log('Fetch post info:', content.id);
                 contentDetails = postRes.data;
 
                 // Get forum title
                 try {
-                    const forumRes = await axios.get(`http://localhost:3002/api/post/ForumTitle/${content.contentId}`);
+                    const forumRes = await axios.get(`http://localhost:3002/api/post/ForumTitle/${content.id}`);
                     contentDetails.forumTitle = forumRes.data || 'Unknown Forum';
                 } catch {
                     contentDetails.forumTitle = 'Forum not found';
