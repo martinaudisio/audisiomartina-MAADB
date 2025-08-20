@@ -1,0 +1,266 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+.main-layout {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  align-items: flex-start;
+}
+
+.query-panel {
+  flex: 0 0 30%;
+}
+
+.results-area {
+  flex: 1;
+}
+
+
+body {
+  font-family: sans-serif;
+  margin: 0;
+  background: #f9f9f9;
+}
+
+.app-container {
+  padding: 10px;
+}
+
+.header {
+  background: #444;
+  color: white;
+  padding: 10px 20px;
+  font-size: 18px;
+}
+
+.main-layout {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+
+
+.form-section {
+  margin-bottom: 20px;
+}
+
+.form-section input {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  padding: 6px;
+  margin-bottom: 10px;
+}
+
+.btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+.btn-blue {
+  background-color: #2196F3;
+}
+
+.btn-green {
+  background-color: #4CAF50;
+}
+
+.results-area {
+  width: 70%;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.post-card {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.post-card img.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+}
+
+.post-card.special {
+  background: #e0f7fa;
+  padding: 10px;
+  border-radius: 5px;
+}
+.collapsible-section {
+  margin-bottom: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.collapsible-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  width: 100%;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  background-color: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, background-color 0.3s ease;
+}
+
+.collapsible-header.active {
+  box-shadow: inset 0 0 0 2px rgba(0,123,255,0.4);
+  background-color: #e9ecef;
+}
+
+.collapsible-content {
+  padding: 12px 14px;
+  border-top: 1px solid #dee2e6;
+  animation: fadeIn 0.3s ease;
+}
+
+.chevron-icon {
+  transition: transform 0.3s ease;
+}
+
+.chevron-icon.rotate {
+  transform: rotate(180deg);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.toggle-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 4px;
+}
+
+.collapsible-content {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.query-panel {
+  width: 30%;
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  max-height: 80vh;               
+  overflow-y: auto;               
+  scrollbar-width: thin;          
+}
+
+.query-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.query-panel::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.query-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+.person-form-card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-title {
+  margin-top: 4px;
+  margin-bottom: 8px;
+  font-size: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 4px;
+  color: gray;
+  font-size: 14px;
+}
+
+.form-input-short {
+  width: 100%;
+  max-width: 250px;
+  padding: 6px;
+  font-size: 14px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  display: block;
+  box-sizing: border-box;
+}
+
+.form-button {
+  width: 100%;
+  max-width: 250px;
+  padding: 6px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-sizing: border-box;
+  background-color: #007bff;
+  color: white;
+  transition: box-shadow 0.2s ease;
+}
+
+.form-button:hover {
+  background-color: #0069d9;
+}
+
+.form-button.active {
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.5);
+}
+.form-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.5);
+}
+.form-button:disabled {
+  background-color: #007bff;
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+.form-button:disabled:hover {
+  background-color: #007bff;
+}
+
+.input-error {
+  border: 1px solid red;
+  background-color: #ffe6e6;
+}
+
+.error-message {
+  color: red;
+  font-size: 13px;
+  margin-top: -8px;
+  margin-bottom: 10px;
+}
