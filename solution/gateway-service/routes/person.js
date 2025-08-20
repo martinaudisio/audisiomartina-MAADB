@@ -97,13 +97,15 @@ router.get('/byLocation/:locId/byTag/:tagId', async (req, res) => {
         const response = await axios.get(`http://localhost:3002/api/people/byLocation/${locationId}/byTag/${tagId}`);
         console.log('Received response:', response.data);
 
-        if(response.data.length == 0){
+        if(response.status === 404 || response.data.length === 0) {
             res.status(404).send('No person found for the specified tag and location.');
-      
+            return;
+        }else{
+             res.status(200).json(response.data);
         }
 
-        // Send the people data as the response
-        res.status(200).json(response.data);
+        console.log('Sending response:', response.data);
+      
 
     } catch (err) {
         // Log any errors and send a response indicating an error occurred
