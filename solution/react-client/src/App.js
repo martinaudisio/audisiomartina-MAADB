@@ -8,15 +8,16 @@ function App() {
   const [results, setResults] = useState(undefined); // undefined = nessuna query ancora eseguita
   const [resultType, setResultType] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [currentSearch, setCurrentSearch] = useState('');
 
   const handleResults = ({ data, type, error, pagination, hasSearched }) => {
     console.log("App.js - handleResults ricevuto:", { data, type, error, pagination, hasSearched });
-    
+
     // Gestisci le risposte di errore (come 404)
     if (error || (data && data.status && data.status !== 200)) {
       setResults({
         error: error || data.message || 'Errore sconosciuto',
-        data: data || [],
+        data: [],
         hasSearched: hasSearched !== undefined ? hasSearched : true // Usa hasSearched se fornito
       });
     } else {
@@ -27,35 +28,43 @@ function App() {
         hasSearched: hasSearched !== undefined ? hasSearched : true // Usa hasSearched se fornito
       });
     }
-    
+
     setResultType(type);
     setIsLoading(false);
   };
 
-  const handleSearch = (searchData) => {
+  const handleSearch = (searchData, executeSearchFn) => {
     setIsLoading(true);
-    // Passa la funzione handleResults al QueryPanel
-    // (assumi che QueryPanel chiami questa funzione quando inizia una ricerca)
+    setCurrentSearch({ ...searchData, executeSearch: executeSearchFn });
   };
 
-  const handlePageChange = (newPage) => {
-    console.log("Cambio pagina:", newPage);
+  const handlePageChange = async (newPage) => {
+    if (!currentSearch || !currentSearch.executeSearch) return;
+
     setIsLoading(true);
-    // Qui dovresti chiamare di nuovo la tua API con la nuova pagina
-    // Per ora è solo un placeholder
+    try {
+      const searchWithPage = { ...currentSearch, page: newPage };
+      await currentSearch.executeSearch(searchWithPage, handleResults);
+      // Assicurati che executeSearch riceva handleResults per aggiornare lo stato
+    } catch (error) {
+      console.error("Errore nel cambio pagina:", error);
+      setIsLoading(false);
+    }
   };
+
 
   return (
     <div className="app-container">
       <Header />
       <div className="main-layout">
-        <QueryPanel 
-          setResults={handleResults} 
+        <QueryPanel
+          setResults={handleResults}
           onSearchStart={() => setIsLoading(true)}
+          setCurrentSearch={setCurrentSearch}
         />
-        <ResultArea 
-          results={results} 
-          type={resultType} 
+        <ResultArea
+          results={results}
+          type={resultType}
           isLoading={isLoading}
           onPageChange={handlePageChange}
         />
