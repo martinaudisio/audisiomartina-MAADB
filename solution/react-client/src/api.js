@@ -3,7 +3,7 @@ const paginateArray = (array, page = 1, limit = 10) => {
   const startIndex = (page - 1) * limit;
   const endIndex = startIndex + limit;
   const paginatedData = array.slice(startIndex, endIndex);
-  
+
   return {
     data: paginatedData,
     pagination: {
@@ -12,9 +12,10 @@ const paginateArray = (array, page = 1, limit = 10) => {
       total: array.length,
       totalPages: Math.ceil(array.length / limit),
       hasNextPage: endIndex < array.length,
-      hasPrevPage: page > 1}
-    };
+      hasPrevPage: page > 1
+    }
   };
+};
 
 /**
  * Fetches the list of known people for a given person ID.
@@ -26,33 +27,27 @@ const paginateArray = (array, page = 1, limit = 10) => {
  */
 export const getKnownPeopleById = async (id, page = 1, limit = 10) => {
   try {
-    const response = await fetch(`http://localhost:3003/person/known/id?personId=${id}`);
+    const response = await fetch(`http://localhost:3003/person/known/id?personId=${id}&page=${page}&limit=${limit}`);
     if (response.status === 404) {
-        return {
-          data: [],
-          hasSearched: true,
-          error: "Nessun dato disponibile"
-        };
-      } 
-    
+      return {
+        data: [],
+        hasSearched: true,
+        error: "Nessun dato disponibile"
+      };
+    }
+
     if (!response.ok) {
       throw new Error("Server responded with an error");
     }
     const data = await response.json();
     console.log("Received data:", data);
-    
-    if (Array.isArray(data)) {
-      const paginatedResult = paginateArray(data, page, limit);
-      return {
-        ...paginatedResult,
-        hasSearched: true
-      };
-    }
-    
+
     return {
-      data: [data],
+      data: data.data,
+      pagination: data.pagination,
       hasSearched: true
     };
+
   } catch (error) {
     console.error("Request error:", error);
     return null;
@@ -67,33 +62,27 @@ export const getKnownPeopleById = async (id, page = 1, limit = 10) => {
  * @param {number} limit - Items per page (default: 5).
  * @returns {Promise<Object|Null>} Paginated data or null if an error occur
  */
-export const getPostByPersonId = async (id, page = 1, limit = 10) => {
+export const getPostByPersonId = async (id, page, limit = 10) => {
   try {
-    const response = await fetch(`http://localhost:3003/post/creator/id?id=${id}`);
+    const response = await fetch(`http://localhost:3003/post/creator/id?id=${id}&page=${page}&limit=${limit}`);
     console.log("Fetching posts for ID:", id);
     if (response.status === 404) {
-        return {
-          data: [],
-          hasSearched: true,
-          error: "Nessun dato disponibile"
-        };
-      }
+      return {
+        data: [],
+        hasSearched: true,
+        error: "Nessun dato disponibile"
+      };
+    }
     if (!response.ok) {
       throw new Error("Server responded with an error");
     }
     const data = await response.json();
-    if (Array.isArray(data)) {
-      const paginatedResult = paginateArray(data, page, limit);
-      return {
-        ...paginatedResult,
-        hasSearched: true
-      };
-    }
-    
     return {
-      data: [data],
+      data: data.data,
+      pagination: data.pagination,
       hasSearched: true
     };
+
   } catch (error) {
     console.error("Request error:", error);
     return null;
@@ -114,12 +103,12 @@ export const getFOF = async (id, page, limit) => {
   try {
     const response = await fetch(`http://localhost:3003/person/fof/id?personId=${id}&page=${page}&limit=${limit}`);
     if (response.status === 404) {
-        return {
-          data: [],
-          hasSearched: true,
-          error: "Nessun dato disponibile"
-        };
-      }
+      return {
+        data: [],
+        hasSearched: true,
+        error: "Nessun dato disponibile"
+      };
+    }
     if (!response.ok) {
       throw new Error("Server responded with an error");
     }
@@ -151,13 +140,13 @@ export const getAvgResponseTime = async (id) => {
   try {
     const response = await fetch(`http://localhost:3003/comment/avgAnswer/id?personId=${id}`);
     if (response.status === 404) {
-        return {
-          data: [],
-          hasSearched: true,
-          error: "Nessun dato disponibile"
-        };
-      }
-        
+      return {
+        data: [],
+        hasSearched: true,
+        error: "Nessun dato disponibile"
+      };
+    }
+
     if (!response.ok) {
       throw new Error("Server responded with an error");
     }
@@ -181,14 +170,14 @@ export const getAvgResponseTime = async (id) => {
  */
 export const getPeopleByTagAndLocation = async (tagId, locationId, page = 1, limit = 10) => {
   try {
-    const response = await fetch(`http://localhost:3003/person/byLocation/${locationId}/byTag/${tagId}`);
+    const response = await fetch(`http://localhost:3003/person/byLocation/${locationId}/byTag/${tagId}?page=${page}&limit=${limit}`);
 
     // Gestione specifica del 404
-     if (response.status === 404) {
-      return { 
-        data: [], 
-        hasSearched: true, 
-        error: "Nessun dato disponibile" 
+    if (response.status === 404) {
+      return {
+        data: [],
+        hasSearched: true,
+        error: "Nessun dato disponibile"
       };
     }
 
@@ -200,18 +189,12 @@ export const getPeopleByTagAndLocation = async (tagId, locationId, page = 1, lim
     }
 
     const data = await response.json();
-    if (Array.isArray(data)) {
-      const paginatedResult = paginateArray(data, page, limit);
-      return {
-        ...paginatedResult,
-        hasSearched: true
-      };
-    }
-    
     return {
-      data: [data],
+      data: data.data,
+      pagination: data.pagination,
       hasSearched: true
     };
+
 
   } catch (error) {
     console.error("Request error:", error);
@@ -229,33 +212,29 @@ export const getPeopleByTagAndLocation = async (tagId, locationId, page = 1, lim
  * @param {number} limit - Items per page (default: 10).
  * @returns {Promise<Object|null>} Paginated data or null if an error occurs.
  */
-export const getPostByCreatorOrganization = async (type, orgId,  page = 1, limit = 10) => {
+export const getPostByCreatorOrganization = async (type, orgId, page, limit = 10) => {
   try {
-    const response = await fetch(`http://localhost:3003/post/byOrganization/${type}/${orgId}`);
+    const response = await fetch(`http://localhost:3003/post/byOrganization/${type}/${orgId}?page=${page}&limit=${limit}`);
     if (response.status === 404) {
-        return {
-          data: [],
-          hasSearched: true,
-          error: "Nessun dato disponibile"
-        };
-      }
-    
+      return {
+        data: [],
+        hasSearched: true,
+        error: "Nessun dato disponibile"
+      };
+    }
+
     if (!response.ok) {
       throw new Error("Server responded with an error");
     }
     const data = await response.json();
-    if (Array.isArray(data)) {
-      const paginatedResult = paginateArray(data, page, limit);
-      return {
-        ...paginatedResult,
-        hasSearched: true
-      };
-    }
-    
+
     return {
-      data: [data],
+      data: data.data,
+      pagination: data.pagination,
       hasSearched: true
     };
+
+
   } catch (error) {
     console.error("Request error:", error);
     return null;
