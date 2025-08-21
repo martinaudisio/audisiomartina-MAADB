@@ -212,7 +212,7 @@ export const getPeopleByTagAndLocation = async (tagId, locationId, page = 1, lim
  * @param {number} limit - Items per page (default: 10).
  * @returns {Promise<Object|null>} Paginated data or null if an error occurs.
  */
-export const getPostByCreatorOrganization = async (type, orgId, page, limit = 10) => {
+export const getPostByCreatorOrganization = async (type, orgId, page, limit = 5) => {
   try {
     const response = await fetch(`http://localhost:3003/post/byOrganization/${type}/${orgId}?page=${page}&limit=${limit}`);
     if (response.status === 404) {
