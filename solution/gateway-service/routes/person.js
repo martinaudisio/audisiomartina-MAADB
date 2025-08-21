@@ -15,7 +15,7 @@ const axios = require('axios');
  */
 router.get('/id', async (req, res) => {
     console.log('Request received on port 3000');
-    
+
     const id = req.query.personId;
     console.log(`Fetching person by ID ${id}`);
     try {
@@ -52,25 +52,26 @@ router.get('/id', async (req, res) => {
 router.get('/byLocation/id', async (req, res) => {
     const id = req.query.placeId;
     console.log(`Fetching persons located in place ID ${id}`);
-  
+
     try {
-      console.log(`http://localhost:3001/api/person/byLocation/${id}`);
-      const response = await axios.get(`http://localhost:3001/api/person/byLocation/${id}`);
-      const peopleList = response.data;
+        console.log(`http://localhost:3001/api/person/byLocation/${id}`);
+        const response = await axios.get(`http://localhost:3001/api/person/byLocation/${id}`);
+        const peopleList = response.data;
 
-      if (peopleList.length == 0) {
-      return res.status(404).json({ message: 'No person found for the specified location.' });}
-    
-      console.log('Received response:', response.data);
-      res.status(200).json(peopleList);
+        if (peopleList.length == 0) {
+            return res.status(404).json({ message: 'No person found for the specified location.' });
+        }
 
-  
+        console.log('Received response:', response.data);
+        res.status(200).json(peopleList);
+
+
     } catch (err) {
-      console.error('Error fetching person:', err.message);
-      res.status(500).send('An error occurred while loading person by location.');
+        console.error('Error fetching person:', err.message);
+        res.status(500).send('An error occurred while loading person by location.');
     }
-  });
-  
+});
+
 
 
 
@@ -83,6 +84,8 @@ router.get('/byLocation/id', async (req, res) => {
  * @param {Object} req.query - The query parameters.
  * @param {string} req.query.locId - The location ID.
  * @param {string} req.query.tagId - The tag ID.
+ * @param {number} req.query.page - Page number (default: 1).
+ * @param {number} req.query.limit - Items per page (default: 10).
  * @param {Object} res - Express response object.
  * @returns {Promise<void>} - A Promise that resolves when the operation is complete.
  */
@@ -90,6 +93,8 @@ router.get('/byLocation/:locId/byTag/:tagId', async (req, res) => {
 
     const locationId = req.params.locId;
     const tagId = req.params.tagId;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
     try {
         console.log(`Fetching people by location and tag from http://localhost:3002/api/people/byLocation/${locationId}/byTag/${tagId}`);
 
@@ -97,15 +102,31 @@ router.get('/byLocation/:locId/byTag/:tagId', async (req, res) => {
         const response = await axios.get(`http://localhost:3002/api/people/byLocation/${locationId}/byTag/${tagId}`);
         console.log('Received response:', response.data);
 
-        if(response.status === 404 || response.data.length === 0) {
-            res.status(404).send('No person found for the specified tag and location.');
-            return;
-        }else{
-             res.status(200).json(response.data);
+        if (response.status === 404 || response.data.length === 0) {
+            res.status(404).json({
+                data: [],
+                hasSearched: true,
+                error: 'Nessun dato disponibile'
+            });
         }
-
+        const total = response.data.length;
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedData = response.data.slice(startIndex, endIndex);
         console.log('Sending response:', response.data);
-      
+        res.status(200).json({
+            data: paginatedData,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                hasNextPage: endIndex < total,
+                hasPrevPage: page > 1
+            },
+            hasSearched: true
+        });
+
 
     } catch (err) {
         // Log any errors and send a response indicating an error occurred
@@ -128,6 +149,9 @@ router.get('/byLocation/:locId/byTag/:tagId', async (req, res) => {
 router.get('/known/id', async (req, res) => {
 
     const id = req.query.personId;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
     try {
         console.log(`Fetching all known people  from http://localhost:3002/api/people/known/${id}`);
 
@@ -135,12 +159,34 @@ router.get('/known/id', async (req, res) => {
         const response = await axios.get(`http://localhost:3002/api/people/known/${id}`);
         console.log('Received response:', response.data);
 
-        if(response.data.length == 0){
-            res.status(404).send('No known person found for the specified ID.');
+        if (!Array.isArray(response.data) || response.data.length == 0) {
+            return res.status(404).json({
+                data: [],
+                hasSearched: true,
+                error: 'No known person found for the specified ID.'
+            });
         }
 
+        const total = response.data.length;
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedData = response.data.slice(startIndex, endIndex);
+
         // Send the game data as the response
-        res.status(200).json(response.data);
+        res.status(200).json(
+            {
+                data: paginatedData,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit),
+                    hasNextPage: endIndex < total,
+                    hasPrevPage: page > 1
+                },
+                hasSearched: true
+            }
+        );
 
     } catch (err) {
         // Log any errors and send a response indicating an error occurred
@@ -155,6 +201,8 @@ router.get('/known/id', async (req, res) => {
  * @function
  * @async
  * @param {string} path - Express path '/fof/id'.
+ * @param {number} req.query.page - Page number (default: 1).
+ * @param {number} req.query.limit - Items per page (default: 10).
  * @param {callback} middleware - Express middleware function handling the GET request.
  * @returns {Object} - If successful, returns a status of 200 and a JSON object containing the list of friends-of-friends.
  * If an error occurs, returns a status of 500 with a descriptive error message.
@@ -163,6 +211,8 @@ router.get('/known/id', async (req, res) => {
 router.get('/fof/id', async (req, res) => {
 
     const id = req.query.personId;
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit) || 10;
     try {
         console.log(`Fetching all fof  from http://localhost:3002/api/people/fof/${id}`);
 
@@ -172,14 +222,31 @@ router.get('/fof/id', async (req, res) => {
 
         const totalFoF = Array.isArray(response.data) ? response.data.length : 0;
 
-        if(response.data.length == 0){
-            res.status(404).send('No friend of friend found for the specified user ID.');
+        if (!Array.isArray(response.data) || response.data.length === 0) {
+            return res.status(404).json({
+                data: [],
+                hasSearched: true,
+                error: 'Nessun dato disponibile'
+            });
         }
-        
-        // Send response with data and total count
+
+        const total = response.data.length;
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedData = response.data.slice(startIndex, endIndex);
+
         res.status(200).json({
-            data: response.data,
-            totalFoF: totalFoF
+            data: paginatedData,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                hasNextPage: endIndex < total,
+                hasPrevPage: page > 1
+            },
+            hasSearched: true,
+            totalFoF: response.data.length // Mantieni questo campo extra se serve
         });
 
     } catch (err) {

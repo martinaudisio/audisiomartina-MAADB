@@ -23,24 +23,31 @@ router.get('/creator/id', async (req, res) => {
         const contents = contentResponse.data; // [{ contentId, type }]
         console.log('Get only IDs and types:', contents);
         if (!Array.isArray(contents) || contents.length === 0) {
-            return res.status(404).json({ message: 'No content found for the specified user ID' });
+            return res.status(404).json({
+                data: [],
+                hasSearched: true,
+                error: 'Nessun dato disponibile'
+            });
         }
 
-        // Pagination logic
-        const total = contents.length;
-        const startIndex = (page - 1) * limit;
-        const endIndex = startIndex + limit;
-        const paginatedContents = contents.slice(startIndex, endIndex);
-
-        // Fetch person info
         let person;
         try {
             const personResponse = await axios.get(`http://localhost:3001/api/person/${creatorId}`);
             person = personResponse.data;
             console.log('Fetch person info:', person);
         } catch (err) {
-            return res.status(404).json({ message: 'Creator not found' });
+            return res.status(404).json({
+                data: [],
+                hasSearched: true,
+                error: 'Creator not found'
+            });
         }
+
+        const total = contents.length;
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedContents = contents.slice(startIndex, endIndex);
+
 
         // Fetch details for each content in parallel
         const enrichedContents = await Promise.all(paginatedContents.map(async (content) => {
@@ -75,9 +82,19 @@ router.get('/creator/id', async (req, res) => {
         }));
 
         res.status(200).json({
-            creator: person,
-            content: enrichedContents,
-            pagination: { page, limit, total }
+            data: [{
+                creator: person,
+                content: enrichedContents
+            }],
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                hasNextPage: endIndex < total,
+                hasPrevPage: page > 1
+            },
+            hasSearched: true
         });
 
     } catch (err) {
@@ -101,6 +118,8 @@ router.get('/byOrganization/:type/:orgId', async (req, res) => {
     // Extract the organization ID from the request parameters
     const id = req.params.orgId;
     const type = req.params.type;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
 
     try {
         console.log(`Fetching people by organization from http://localhost:3002/api/people/byOrganization/${type}/${id}`);
@@ -111,10 +130,20 @@ router.get('/byOrganization/:type/:orgId', async (req, res) => {
         const peopleData = people.data
 
         if (!Array.isArray(peopleData) || peopleData.length === 0) {
-            return res.status(404).json({ message: 'No person found for the given organization.' });
+            return res.status(404).json({
+                data: [],
+                hasSearched: true,
+                error: 'Nessun dato disponibile'
+            });
         }
 
-         const peopleWithPosts = await Promise.all(
+        const total = peopleData.length;
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedPeople = peopleData.slice(startIndex, endIndex);
+
+
+        const peopleWithPosts = await Promise.all(
             peopleData.map(async (person) => {
                 const { id, since } = person;
 
@@ -136,7 +165,18 @@ router.get('/byOrganization/:type/:orgId', async (req, res) => {
             })
         );
 
-        res.status(200).json(peopleWithPosts);
+        res.status(200).json({
+            data: peopleWithPosts,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                hasNextPage: endIndex < total,
+                hasPrevPage: page > 1
+            },
+            hasSearched: true
+        });
 
 
     } catch (err) {
