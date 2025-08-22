@@ -76,6 +76,9 @@ router.get('/byOrganization/:type/:id', async (req, res) => {
 
     try {
         const persons = await getPersonsByOrganization(Number(id), type);
+        if (persons.length === 0) {
+            return res.status(404).json({ message: 'No person found dor the specified organization ID.' });
+        }
         res.json(persons);
     } catch (error) {
         res.status(400).json({ error: error.message });

@@ -8,7 +8,7 @@ const driver = require('../config/neo4j');
  * and the original message.
  *
  * @param {number} userId - The ID of the user whose replies are to be retrieved.
- * @returns {Promise<{ status: number, data?: Array<{ replyId: number, originalId: number, originalType: string }>, message?: string, error?: string }>}
+ * @returns {Promise<{ status: number, data?: Array<{ replyId: number, originalId: number }>, message?: string, error?: string }>}
  */
 async function getRepliesToOthers(userId) {
 

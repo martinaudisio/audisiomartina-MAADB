@@ -14,7 +14,7 @@ router.get('/byUser/:userId', async (req, res) => {
   const result = await getContentByUser(userId);
   console.log('Result:', result);
 
-  res.status(result.status).json(result || { message: result.message });
+  res.status(result.status).json(result.data || { message: result.message });
 });
 
 /**
@@ -29,7 +29,7 @@ router.get('/byUser/:userId', async (req, res) => {
  */
 router.get('/Forumtitle/:postId', async (req, res) => {
   const id = Number(req.params.postId);
-  //console.log('Post ID:', id);
+  console.log('Post ID:', id);
 
   const result = await getForumTitleByPost(id);
   console.log('Result:', result.title);
