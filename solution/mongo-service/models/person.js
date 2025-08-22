@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-
 /**
  * Defines the schema for a Person document stored in the "person" collection.
  * @typedef {Object} personSchema
@@ -69,5 +68,10 @@ const personSchema = new mongoose.Schema({
     required: true
   }
 });
+
+/**
+ * The model for the 'person' collection in MongoDB.
+ * @type {mongoose.Model}
+ */
 const Person = mongoose.model("Person", personSchema, "person");
 module.exports = Person;
