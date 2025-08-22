@@ -61,120 +61,10 @@
             }
           },
           "404": {
-            "description": "No comments or replies found for the specified user",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "NoComments": {
-                    "summary": "No comments found",
-                    "value": {
-                      "message": "No comments found for the specified user ID."
-                    }
-                  },
-                  "NoReplies": {
-                    "summary": "No replies found",
-                    "value": {
-                      "message": "No replies found for the specified user ID."
-                    }
-                  }
-                }
-              }
-            }
+            "description": "No replies found for the specified user"
           },
           "500": {
             "description": "An error occurred while loading the average reply time."
-          }
-        }
-      }
-    },
-    "/person/id": {
-      "get": {
-        "summary": "Get person by ID",
-        "description": "Retrieves person data based on the provided person ID.",
-        "parameters": [
-          {
-            "name": "personId",
-            "in": "query",
-            "description": "The ID of the person to retrieve.",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Returns the first name and last name of the person associated with the specified ID.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Name"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "No person found for the specified ID."
-          },
-          "500": {
-            "description": "An error occurred while loading person by ID."
-          }
-        }
-      }
-    },
-    "/person/byLocation/id": {
-      "get": {
-        "summary": "Get people by location",
-        "description": "Retrieves person data for people located in a specific place.",
-        "parameters": [
-          {
-            "name": "placeId",
-            "in": "query",
-            "description": "The ID of the place to filter people.",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "An array of detailed person objects for the specified location.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "$ref": "#/components/schemas/PersonDetail"
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "No content found for the specified user ID or creator not found",
-            "content": {
-              "application/json": {
-                "examples": {
-                  "NoContent": {
-                    "summary": "No content Found",
-                    "value": {
-                      "message": "No content found for the specified user ID"
-                    }
-                  },
-                  "CreatorNotFound": {
-                    "summary": "Creator not found",
-                    "value": {
-                      "message": "Creator not found"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "An error occurred while loading person by location."
           }
         }
       }
@@ -201,6 +91,26 @@
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "The page number for pagination."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "The maximum number of results per page."
           }
         ],
         "responses": {
@@ -209,10 +119,22 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "$ref": "#/components/schemas/PersonMinimal"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PersonMinimal"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    },
+                    "hasSearched": {
+                      "type": "boolean",
+                      "description": "Indicates whether the search was executed.",
+                      "example": true
+                    }
                   }
                 }
               }
@@ -240,6 +162,26 @@
             "schema": {
               "type": "integer"
             }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "The page number for pagination."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "The maximum number of results per page."
           }
         ],
         "responses": {
@@ -249,7 +191,22 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "$ref": "#/components/schemas/PersonMinimal"
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PersonMinimal"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    },
+                    "hasSearched": {
+                      "type": "boolean",
+                      "description": "Indicates whether the search was executed.",
+                      "example": true
+                    }
+                  }
                 }
               }
             }
@@ -276,6 +233,26 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "The page number for pagination."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "The maximum number of results per page."
           }
         ],
         "responses": {
@@ -284,9 +261,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PersonFOF"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PersonFOF"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    },
+                    "hasSearched": {
+                      "type": "boolean",
+                      "description": "Indicates whether the search was executed.",
+                      "example": true
+                    },
+                    "totalFoF": {
+                      "type": "integer",
+                      "description": "Total number of friends-of-friends found.",
+                      "example": 1492
+                    }
                   }
                 }
               }
@@ -314,6 +309,26 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "The page number for pagination."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "The maximum number of results per page."
           }
         ],
         "responses": {
@@ -362,6 +377,26 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "The page number for pagination."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "The maximum number of results per page."
           }
         ],
         "responses": {
@@ -390,6 +425,39 @@
   },
   "components": {
     "schemas": {
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "example": 1
+          },
+          "limit": {
+            "type": "integer",
+            "example": 10
+          },
+          "total": {
+            "type": "integer",
+            "example": 50
+          },
+          "totalPages": {
+            "type": "integer",
+            "example": 5
+          },
+          "hasNextPage": {
+            "type": "boolean",
+            "example": true
+          },
+          "hasPrevPage": {
+            "type": "boolean",
+            "example": false
+          },
+          "hasSearched": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
       "Name": {
         "type": "object",
         "description": "Basic name structure containing first and last name.",
@@ -433,7 +501,11 @@
           },
           "gender": {
             "type": "string",
-            "enum": ["male", "female", "other"],
+            "enum": [
+              "male",
+              "female",
+              "other"
+            ],
             "description": "Gender of the person.",
             "example": "male"
           },
@@ -568,7 +640,7 @@
             "description": "Textual content.",
             "example": "thx"
           },
-            "forumTitle": {
+          "forumTitle": {
             "type": "string",
             "description": "Title of the forum where the content was posted.",
             "example": "Album 1 of Jun Li",
@@ -581,17 +653,39 @@
       },
       "CreatorContent": {
         "type": "object",
-        "description": "Data structure combining creator information with their created content.",
+        "description": "Data structure combining creator information with all content items authored by the person.",
         "properties": {
           "creator": {
-            "$ref": "#/components/schemas/Name"
+            "type": "object",
+            "description": "Information about the creator of the content.",
+            "properties": {
+              "firstName": {
+                "type": "string",
+                "description": "The creator's first name."
+              },
+              "lastName": {
+                "type": "string",
+                "description": "The creator's last name."
+              }
+            },
+            "required": [
+              "firstName",
+              "lastName"
+            ]
           },
           "content": {
             "type": "array",
-            "description": "List of content items authored by the person.",
+            "description": "List of posts or comments created by the person, including parent post data where applicable.",
             "items": {
               "$ref": "#/components/schemas/CommentContent"
             }
+          },
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          },
+          "hasSearched": {
+            "type": "boolean",
+            "description": "Indicates if a search was performed."
           }
         }
       },
@@ -686,6 +780,13 @@
             "description": "List of posts authored by the creator.",
             "items": {
               "$ref": "#/components/schemas/Post"
+            }
+          },
+          "pagination": {
+            "type": "object",
+            "description": "Pagination information for the list of posts.",
+            "items": {
+              "$ref": "#/components/schemas/Pagination"
             }
           }
         }

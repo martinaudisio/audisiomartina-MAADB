@@ -76,18 +76,23 @@ router.get('/byLocation/id', async (req, res) => {
 
 
 /**
- * Route to retrieve people associated with a specific location and tag.
- * @name get/byLocation/:locId/byTag/:tagId
+ * GET /byLocation/:locId/byTag/:tagId
+ * 
+ * Retrieves all people associated with a specific location and tag, with pagination support.
+ * 
+ * @name GET/byLocation/:locId/byTag/:tagId
  * @function
  * @async
- * @param {Object} req - Express request object.
- * @param {Object} req.query - The query parameters.
- * @param {string} req.query.locId - The location ID.
- * @param {string} req.query.tagId - The tag ID.
- * @param {number} req.query.page - Page number (default: 1).
- * @param {number} req.query.limit - Items per page (default: 10).
- * @param {Object} res - Express response object.
- * @returns {Promise<void>} - A Promise that resolves when the operation is complete.
+ * @param {string} req.params.locId - The unique identifier of the location.
+ * @param {string} req.params.tagId - The unique identifier of the tag.
+ * @param {number} [req.query.page=1] - Page number for paginated results.
+ * @param {number} [req.query.limit=10] - Maximum number of results per page.
+ * @returns {Object} 200 - JSON object containing:
+ *   - {Object[]} data - Array of people matching the location and tag.
+ *   - {Object} pagination - Pagination metadata.
+ *   - {boolean} hasSearched - Indicates if the search was executed.
+ * @returns {Object} 404 - If no people are found, returns an error message.
+ * @returns {Object} 500 - If an internal error occurs, returns an error message.
  */
 router.get('/byLocation/:locId/byTag/:tagId', async (req, res) => {
 
@@ -135,17 +140,25 @@ router.get('/byLocation/:locId/byTag/:tagId', async (req, res) => {
     }
 });
 
+
 /**
- * Route serving the list of known people for a given person ID.
- * @name get/known
+ * GET /known/id
+ * 
+ * Retrieves the list of known people for a given person ID, with pagination support.
+ * 
+ * @name GET/known/id
  * @function
  * @async
- * @param {string} path - Express path '/known'.
- * @param {callback} middleware - Express middleware function handling the GET request.
- * @returns {Object} - If successful, returns a status of 200 and a JSON object containing the list of known people.
- * If there is an error, returns a status of 500 with an appropriate error message.
+ * @param {string} req.query.personId - The unique identifier of the person.
+ * @param {number} [req.query.page=1] - Page number for paginated results.
+ * @param {number} [req.query.limit=10] - Maximum number of results per page.
+ * @returns {Object} 200 - JSON object containing:
+ *   - {Object[]} data - Array of known people.
+ *   - {Object} pagination - Pagination metadata.
+ *   - {boolean} hasSearched - Indicates if the search was executed.
+ * @returns {Object} 404 - If no known people are found, returns an error message.
+ * @returns {Object} 500 - If an internal error occurs, returns an error message.
  */
-
 router.get('/known/id', async (req, res) => {
 
     const id = req.query.personId;
@@ -195,19 +208,26 @@ router.get('/known/id', async (req, res) => {
     }
 });
 
+
 /**
- * Route serving the list of friends-of-friends (FOF) for a given person ID.
- * @name get/fof/id
+ * GET /fof/id
+ * 
+ * Retrieves the list of friends-of-friends (FOF) for a given person ID, with pagination support.
+ * 
+ * @name GET/fof/id
  * @function
  * @async
- * @param {string} path - Express path '/fof/id'.
- * @param {number} req.query.page - Page number (default: 1).
- * @param {number} req.query.limit - Items per page (default: 10).
- * @param {callback} middleware - Express middleware function handling the GET request.
- * @returns {Object} - If successful, returns a status of 200 and a JSON object containing the list of friends-of-friends.
- * If an error occurs, returns a status of 500 with a descriptive error message.
+ * @param {string} req.query.personId - The unique identifier of the person.
+ * @param {number} [req.query.page=1] - Page number for paginated results.
+ * @param {number} [req.query.limit=10] - Maximum number of results per page.
+ * @returns {Object} 200 - JSON object containing:
+ *   - {Object[]} data - Array of friends-of-friends.
+ *   - {Object} pagination - Pagination metadata.
+ *   - {boolean} hasSearched - Indicates if the search was executed.
+ *   - {number} totalFoF - Total number of friends-of-friends.
+ * @returns {Object} 404 - If no FOFs are found, returns an error message.
+ * @returns {Object} 500 - If an internal error occurs, returns an error message.
  */
-
 router.get('/fof/id', async (req, res) => {
 
     const id = req.query.personId;

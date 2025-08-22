@@ -3,13 +3,23 @@ const router = express.Router();
 const axios = require('axios');
 
 /**
- * Route serving all contents created by a specific person.
- * @name get/creator/:creatorPersonId
+ * GET /creator/id
+ * 
+ * Retrieves all content (posts and comments) created by a specific person, 
+ * including details about the creator and pagination metadata.
+ * 
+ * @name GET/creator/id
  * @function
  * @async
- * @param {string} path - Express path '/creator/:creatorPersonId'.
- * @param {callback} middleware - Express middleware function handling the GET request.
- * @returns {Object} - Returns an array of content (Post and Comments) objects created by the specified person.
+ * @param {string} req.query.id - The unique identifier of the creator person.
+ * @param {number} [req.query.page=1] - Page number for paginated results.
+ * @param {number} [req.query.limit=10] - Maximum number of contents per page.
+ * @returns {Object} 200 - JSON response containing:
+ *   - {Object[]} data - Array containing the creator's information and their enriched contents.
+ *   - {Object} pagination - Metadata about current page, total items, total pages, and navigation flags.
+ *   - {boolean} hasSearched - Indicates if the search was executed.
+ * @returns {Object} 404 - If no content or creator is found, returns an error message.
+ * @returns {Object} 500 - If an internal error occurs, returns an error message.
  */
 router.get('/creator/id', async (req, res) => {
     const creatorId = req.query.id;
@@ -105,14 +115,24 @@ router.get('/creator/id', async (req, res) => {
 
 
 /**
- * Route that retrieves people affiliated with a specified organization, along with their posts created since their affiliation date.
+ * GET /byOrganization/:type/:orgId
+ * 
+ * Retrieves all people affiliated with a given organization, along with 
+ * the posts they have created since their affiliation date. Supports pagination.
+ * 
  * @name GET/byOrganization/:type/:orgId
  * @function
  * @async
- * @param {string} path - Express path '/byOrganization/:type/:orgId'.
- * @param {callback} middleware - Express middleware function handling the GET request.
- * @returns {Object[]} - On success, returns status 200 and an array of person objects, each including their last post since the affiliation date.
- * If no people are found, returns status 404 with a message. If an error occurs, returns status 500 with an error message.
+ * @param {string} req.params.type - The type of the organization (e.g., "company", "institution").
+ * @param {string} req.params.orgId - The unique identifier of the organization.
+ * @param {number} [req.query.page=1] - Page number for paginated results.
+ * @param {number} [req.query.limit=10] - Maximum number of people per page.
+ * @returns {Object} 200 - JSON response containing:
+ *   - {Object[]} data - Array of people objects, each with affiliation info and their posts since that date.
+ *   - {Object} pagination - Metadata about current page, total items, total pages, and navigation flags.
+ *   - {boolean} hasSearched - Indicates if the search was executed.
+ * @returns {Object} 404 - If no people are found, returns an error message.
+ * @returns {Object} 500 - If an internal error occurs, returns an error message.
  */
 router.get('/byOrganization/:type/:orgId', async (req, res) => {
     // Extract the organization ID from the request parameters

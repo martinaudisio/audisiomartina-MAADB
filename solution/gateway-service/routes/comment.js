@@ -3,17 +3,25 @@ const router = express.Router();
 const axios = require('axios');
 
 /**
- * Route serving the average reply time for comments made by a person.
+ * GET /avgAnswer/id
+ * 
+ * Retrieves the average reply time for comments made by a specific person.  
+ * The calculation is based on the time difference between a user's comments and replies received.  
+ * Results include both the numeric average (in seconds) and a human-readable breakdown (days, hours, minutes, seconds).
+ * 
  * @name GET/avgAnswer/id
  * @function
  * @async
- * @param {string} path - Express path '/avgAnswer/id'.
- * @param {callback} middleware - Express middleware function.
- * @returns {Object} - If successful, returns a status of 200 and a JSON object containing:
- *  - `averageReplyTimeSeconds`: the average reply time in seconds,
- *  - `formatted`: an object with the reply time formatted as days, hours, minutes, and seconds.
- *  If no comments or reply times are found, returns a status of 200 with `averageReplyTime` set to `null`.
- *  If an error occurs, returns a status of 500 with an error message.
+ * @param {string} req.query.personId - The unique identifier of the person.
+ * @returns {Object} 200 - JSON object containing:
+ *   - {number|null} averageReplyTimeSeconds - The average reply time in seconds (null if no replies are found).
+ *   - {Object} formatted - Breakdown of the average reply time:
+ *       - {number} days - Days part of the average.
+ *       - {number} hours - Hours part of the average.
+ *       - {number} minutes - Minutes part of the average.
+ *       - {number} seconds - Seconds part of the average.
+ * @returns {Object} 404 - If no comments are found for the given person ID, returns an error message.
+ * @returns {Object} 500 - If an internal error occurs, returns an error message.
  */
 router.get('/avgAnswer/id', async (req, res) => {
     const id = req.query.personId;
