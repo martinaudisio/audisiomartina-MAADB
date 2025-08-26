@@ -5,12 +5,12 @@ import TimeResult from './result/TimeResult.js';
 import Spinner from 'react-bootstrap/Spinner';
 import PostByOrgResult from './result/PostByOrgResult.js';
 
-const ResultArea = ({ results, type, isLoading, onPageChange }) => {
-
+const ResultArea = ({ results, type, isLoading, onPageChange }) => {  // rimuovi totalFoF dai props
   // estrai il payload reale (gestione paginazione se usata altrove)
   const rawData = results && typeof results === 'object' && 'data' in results ? results.data : results;
   const pagination = results && typeof results === 'object' && 'pagination' in results ? results.pagination : null;
   const hasSearched = results && typeof results === 'object' && 'hasSearched' in results ? results.hasSearched : false;
+  const totalFoF = results?.totalFoF || 0;  // aggiungi questa riga
 
 
   // errore: può trovarsi sia in results che in rawData a seconda della API
@@ -25,15 +25,8 @@ const ResultArea = ({ results, type, isLoading, onPageChange }) => {
   const isEmpty = items.length === 0;
 
   // DEBUG: Aggiungi questi log
-  console.log("results:", results);
-  console.log("hasSearched:", hasSearched);
-  console.log("rawData:", rawData);
-  console.log("items:", items);
-  console.log("isEmpty:", isEmpty);
-  console.log("isError:", isError);
-  console.log("pagination:", pagination);
-   console.error("🔴 DEBUG - type:", type);
-  console.error("🔴 DEBUG - type === 'postbyorg':", type === 'postbyorg');
+  console.log('ResultArea results:', results);
+  console.log('ResultArea totalFoF:', totalFoF);
 
   // FIX: paginazione - controlla anche se pagination esiste
   const hasNextPage = pagination && pagination.page && pagination.limit && pagination.total &&
@@ -80,14 +73,16 @@ const ResultArea = ({ results, type, isLoading, onPageChange }) => {
                 </div>
               )}
               {type === 'post' && <PostResult data={items} />}
-              {type === 'fof' && <FOFResult fofData={items} />}
+              {type === 'fof' && <FOFResult
+                fofData={items}
+                totalFoF={totalFoF}  // passa totalFoF estratto da results
+              />}
               {type === 'time' && <TimeResult timeData={items} />}
               {type === 'postbyorg' && (
                 <PostByOrgResult content={items} />
               )}
 
-              {/* Paginazione */}
-              {/* Paginazione */}
+          
               {(hasPrevPage || hasNextPage) && onPageChange && (
                 <div className="pagination-container">
                   {hasPrevPage && (
@@ -99,11 +94,11 @@ const ResultArea = ({ results, type, isLoading, onPageChange }) => {
                       Pagina precedente
                     </button>
                   )}
-                  
+
                   <span className="pagination-info">
                     Pagina {pagination.page} di {Math.ceil(pagination.total / pagination.limit)}
                   </span>
-                  
+
                   {hasNextPage && (
                     <button
                       onClick={() => onPageChange(pagination.page + 1)}

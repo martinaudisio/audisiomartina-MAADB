@@ -10,8 +10,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentSearch, setCurrentSearch] = useState('');
 
-  const handleResults = ({ data, type, error, pagination, hasSearched }) => {
-    console.log("App.js - handleResults ricevuto:", { data, type, error, pagination, hasSearched });
+  const handleResults = ({ data, type, totalFoF,  error, pagination, hasSearched }) => {
+    console.log("App.js - handleResults ricevuto:", { data, type, totalFoF ,error, pagination, hasSearched });
 
     // Gestisci le risposte di errore (come 404)
     if (error || (data && data.status && data.status !== 200)) {
@@ -25,6 +25,7 @@ function App() {
       setResults({
         data: data || [],
         pagination: pagination || null,
+        totalFoF: totalFoF || 0, 
         hasSearched: hasSearched !== undefined ? hasSearched : true // Usa hasSearched se fornito
       });
     }

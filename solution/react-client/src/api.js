@@ -113,10 +113,11 @@ export const getFOF = async (id, page, limit) => {
       throw new Error("Server responded with an error");
     }
     const data = await response.json();
-    // filteredData = Array.isArray(data) ? data.filter(d => d && d.id) : data;
-    //const paginatedResult = paginateArray(data, page, limit);
+ 
+    console.log(data.totalFoF);
     return {
-      ...data,
+      ...data, 
+      totalFoF: data.totalFoF || 0, 
       hasSearched: true
     };
   } catch (error) {

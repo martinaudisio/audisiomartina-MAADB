@@ -49,6 +49,14 @@ const PersonForm = ({ title, buttonLabel, onResults, setCurrentSearch }) => {
           error: result.error,
           hasSearched: result.hasSearched,
         });
+      } else if (result?.data && type === 'fof') { 
+        onResults({
+          data: result.data,
+          type,
+          totalFoF: result.totalFoF,
+          hasSearched: result.hasSearched,
+          pagination: result.pagination,
+        });
       } else if (result?.data) {
         onResults({
           data: result.data,
@@ -56,7 +64,8 @@ const PersonForm = ({ title, buttonLabel, onResults, setCurrentSearch }) => {
           hasSearched: result.hasSearched,
           pagination: result.pagination,
         });
-      } else {
+      } 
+      else {
         const normalizedData = Array.isArray(result) ? result : [result];
         onResults({ data: normalizedData, type });
       }
