@@ -85,6 +85,44 @@
                 }
             }
         },
+        "/api/post/content/{creatorPersonId}": {
+            "get": {
+                "summary": "Retrieve contents by CreatorPersonId",
+                "description": "Retrieve posts and comments created by a specific CreatorPersonId.",
+                "parameters": [
+                    {
+                        "name": "creatorPersonId",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the creator person",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of contants containing all information including the forum title for the specified creator and the parent post if it's a comment.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Content"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No posts found for this creator ID."
+                    },
+                    "500": {
+                        "description": "Error retrieving posts by creator ID."
+                    }
+                }
+            }
+        },
         "/api/post/location/{locationCountryId}": {
             "get": {
                 "summary": "Retrieve posts by LocationCountryId",
@@ -320,69 +358,71 @@
             }
         },
         "/api/comment/replyTime": {
-        "post": {
-            "summary": "Calculate reply times for comments",
-            "description": "Receives an array of comment replies and calculates the time difference in seconds between each reply and its original content.",
-            "requestBody": {
-            "required": true,
-            "content": {
-                "application/json": {
-                "schema": {
-                    "type": "object",
-                    "properties": {
-                    "comments": {
-                        "type": "array",
-                        "description": "Array of comment reply objects containing replyId, originalId, and originalType.",
-                        "items": {
-                        "$ref": "#/components/schemas/CommentReplyInfo"
-                        },
-                        "example": [
-                        {
-                            "replyId": 1168231106633,
-                            "originalId": 1168231106628,
-                            "originalType": "Comment"
-                        },
-                        {
-                            "replyId": 1168231106700,
-                            "originalId": 1168231106600,
-                            "originalType": "Post"
-                        }
-                        ]
-                    }
-                    },
-                    "required": ["comments"]
-                }
-                }
-            }
-            },
-            "responses": {
-            "200": {
-                "description": "Reply times calculated successfully",
-                "content": {
-                "application/json": {
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "replyTime": {
-                            "type": "number",
-                            "format": "float",
-                            "example": 142.7,
-                            "description": "Average time in seconds between replies and their original contents."
+            "post": {
+                "summary": "Calculate reply times for comments",
+                "description": "Receives an array of comment replies and calculates the time difference in seconds between each reply and its original content.",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "comments": {
+                                        "type": "array",
+                                        "description": "Array of comment reply objects containing replyId, originalId, and originalType.",
+                                        "items": {
+                                            "$ref": "#/components/schemas/CommentReplyInfo"
+                                        },
+                                        "example": [
+                                            {
+                                                "replyId": 1168231106633,
+                                                "originalId": 1168231106628,
+                                                "originalType": "Comment"
+                                            },
+                                            {
+                                                "replyId": 1168231106700,
+                                                "originalId": 1168231106600,
+                                                "originalType": "Post"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "comments"
+                                ]
                             }
                         }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Reply times calculated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "replyTime": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 142.7,
+                                            "description": "Average time in seconds between replies and their original contents."
+                                        }
+                                    }
+                                }
+                            }
                         }
-                  }
+                    },
+                    "400": {
+                        "description": "Invalid input format"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
                 }
-            },
-            "400": {
-                "description": "Invalid input format"
-            },
-            "500": {
-                "description": "Internal server error"
             }
-            }
-        }
-    },
+        },
         "/api/comment/location/{locationCountryId}": {
             "get": {
                 "summary": "Retrieve comments by location country",
@@ -426,49 +466,49 @@
                 "summary": "Retrieve all persons",
                 "description": "Retrieve all persons from the database.",
                 "responses": {
-                "200": {
-                    "description": "A list of persons",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/PersonProfile"
+                    "200": {
+                        "description": "A list of persons",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/PersonProfile"
+                                    }
+                                }
+                            }
                         }
-                        }
+                    },
+                    "500": {
+                        "description": "Error retrieving persons"
                     }
-                    }
-                },
-                "500": {
-                    "description": "Error retrieving persons"
-                }
                 }
             }
-            },
-            "/api/person/{id}": {
-                "get": {
-                    "summary": "Retrieve a person by its ID",
-                    "description": "Retrieve a single person by its ID.",
-                    "parameters": [
+        },
+        "/api/person/{id}": {
+            "get": {
+                "summary": "Retrieve a person by its ID",
+                "description": "Retrieve a single person by its ID.",
+                "parameters": [
                     {
                         "name": "id",
                         "in": "path",
                         "required": true,
                         "description": "ID of the person to retrieve",
                         "schema": {
-                        "type": "integer"
+                            "type": "integer"
                         }
                     }
-                    ],
-                    "responses": {
+                ],
+                "responses": {
                     "200": {
                         "description": "Person retrieved successfully",
                         "content": {
-                        "application/json": {
-                            "schema": {
-                            "$ref": "#/components/schemas/PersonName"
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PersonName"
+                                }
                             }
-                        }
                         }
                     },
                     "404": {
@@ -479,31 +519,31 @@
                     }
                 }
             }
-            },
-            "/api/person/byLocation/{id}": {
-                "get": {
-                    "summary": "Retrieve a person by its location ID",
-                    "description": "Retrieve people by their location ID.",
-                    "parameters": [
+        },
+        "/api/person/byLocation/{id}": {
+            "get": {
+                "summary": "Retrieve a person by its location ID",
+                "description": "Retrieve people by their location ID.",
+                "parameters": [
                     {
                         "name": "id",
                         "in": "path",
                         "required": true,
                         "description": "ID of the location of person to retrieve",
                         "schema": {
-                        "type": "integer"
+                            "type": "integer"
                         }
                     }
-                    ],
-                    "responses": {
+                ],
+                "responses": {
                     "200": {
                         "description": "Person retrieved successfully",
                         "content": {
-                        "application/json": {
-                            "schema": {
-                            "$ref": "#/components/schemas/PersonProfile"
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PersonProfile"
+                                }
                             }
-                        }
                         }
                     },
                     "404": {
@@ -514,28 +554,28 @@
                     }
                 }
             }
-            },
+        },
         "/api/forum": {
             "get": {
                 "summary": "Retrieve all forums",
                 "description": "Retrieve all forums from the database.",
                 "responses": {
-                "200": {
-                    "description": "A list of forums",
-                    "content": {
-                    "application/json": {
-                        "schema": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/ForumInfo"
+                    "200": {
+                        "description": "A list of forums",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ForumInfo"
+                                    }
+                                }
+                            }
                         }
-                        }
+                    },
+                    "500": {
+                        "description": "Error retrieving forums"
                     }
-                    }
-                },
-                "500": {
-                    "description": "Error retrieving forums"
-                }
                 }
             }
         },
@@ -544,33 +584,33 @@
                 "summary": "Retrieve a forum by its moderator (person) ID",
                 "description": "Retrieve a single forum by the moderator ID.",
                 "parameters": [
-                {
-                    "name":"moderatorId",
-                    "in": "path",
-                    "required": true,
-                    "description": "ID of the moderator to retrieve the forum from",
-                    "schema": {
-                    "type": "integer"
-                    }
-                }
-                ],
-                "responses": {
-                "200": {
-                    "description": "Forum retrieved successfully",
-                    "content": {
-                    "application/json": {
+                    {
+                        "name": "moderatorId",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the moderator to retrieve the forum from",
                         "schema": {
-                        "$ref": "#/components/schemas/ForumInfo"
+                            "type": "integer"
                         }
                     }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Forum retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForumInfo"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Forum not found"
+                    },
+                    "500": {
+                        "description": "Error retrieving forum"
                     }
-                },
-                "404": {
-                    "description": "Forum not found"
-                },
-                "500": {
-                    "description": "Error retrieving forum"
-                }
                 }
             }
         },
@@ -579,276 +619,325 @@
                 "summary": "Retrieve the forum title by its ID",
                 "description": "Retrieve a single forum by its ID.",
                 "parameters": [
-                {
-                    "name": "id",
-                    "in": "path",
-                    "required": true,
-                    "description": "ID of the forum to retrieve",
-                    "schema": {
-                    "type": "integer"
-                    }
-                }
-                ],
-                "responses": {
-                "200": {
-                    "description": "Forum retrieved successfully",
-                    "content": {
-                    "application/json": {
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the forum to retrieve",
                         "schema": {
-                        "$ref": "#/components/schemas/ForumTitle"
+                            "type": "integer"
                         }
                     }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Forum retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ForumTitle"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Forum not found"
+                    },
+                    "500": {
+                        "description": "Error retrieving forum"
                     }
-                },
-                "404": {
-                    "description": "Forum not found"
-                },
-                "500": {
-                    "description": "Error retrieving forum"
-                }
                 }
             }
         }
     },
     "components": {
-    "schemas": {
-      "CommentReplyInfo": {
-        "type": "object",
-        "description": "Details of a comment reply referencing an original content entity.",
-        "properties": {
-          "replyId": {
-            "type": "integer",
-            "description": "Unique identifier of the reply comment.",
-            "example": 1168231106633
-          },
-          "originalId": {
-            "type": "integer",
-            "description": "Unique identifier of the original content being replied to.",
-            "example": 1168231106628
-          },
-          "originalType": {
-            "type": "string",
-            "description": "Type of the original content, such as 'Comment' or 'Post'.",
-            "example": "Comment"
-          }
-        },
-        "required": ["replyId", "originalId", "originalType"]
-      },
-      "Post": {
-        "type": "object",
-        "description": "A user-generated post within a forum.",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "description": "Unique identifier for the post.",
-            "example": 1
-          },
-          "creationDate": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp when the post was created.",
-            "example": "2012-10-01T12:00:00Z"
-          },
-          "creatorPersonId": {
-            "type": "integer",
-            "description": "Identifier of the person who created the post.",
-            "example": 14
-          },
-          "imageFile": {
-            "type": "string",
-            "description": "Optional image file attached to the post.",
-            "example": "photo962072674326.jpg"
-          },
-          "browserUsed": {
-            "type": "string",
-            "description": "Browser used to create the post.",
-            "example": "Firefox"
-          },
-          "length": {
-            "type": "integer",
-            "description": "Length of the post content in characters.",
-            "example": 0
-          },
-          "forumId": {
-            "type": "integer",
-            "description": "Identifier of the forum containing this post.",
-            "example": 0
-          },
-          "countryId": {
-            "type": "integer",
-            "description": "Identifier of the country where the post was made.",
-            "example": 81
-          },
-          "language": {
-            "type": "string",
-            "description": "Language of the post content.",
-            "example": "fa"
-          },
-          "content": {
-            "type": "string",
-            "description": "Textual content of the post.",
-            "example": "This is a sample post content."
-          }
+        "schemas": {
+            "CommentReplyInfo": {
+                "type": "object",
+                "description": "Details of a comment reply referencing an original content entity.",
+                "properties": {
+                    "replyId": {
+                        "type": "integer",
+                        "description": "Unique identifier of the reply comment.",
+                        "example": 1168231106633
+                    },
+                    "originalId": {
+                        "type": "integer",
+                        "description": "Unique identifier of the original content being replied to.",
+                        "example": 1168231106628
+                    },
+                    "originalType": {
+                        "type": "string",
+                        "description": "Type of the original content, such as 'Comment' or 'Post'.",
+                        "example": "Comment"
+                    }
+                },
+                "required": [
+                    "replyId",
+                    "originalId",
+                    "originalType"
+                ]
+            },
+            "Post": {
+                "type": "object",
+                "description": "A user-generated post within a forum.",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "Unique identifier for the post.",
+                        "example": 1
+                    },
+                    "creationDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Timestamp when the post was created.",
+                        "example": "2012-10-01T12:00:00Z"
+                    },
+                    "creatorPersonId": {
+                        "type": "integer",
+                        "description": "Identifier of the person who created the post.",
+                        "example": 14
+                    },
+                    "imageFile": {
+                        "type": "string",
+                        "description": "Optional image file attached to the post.",
+                        "example": "photo962072674326.jpg"
+                    },
+                    "browserUsed": {
+                        "type": "string",
+                        "description": "Browser used to create the post.",
+                        "example": "Firefox"
+                    },
+                    "length": {
+                        "type": "integer",
+                        "description": "Length of the post content in characters.",
+                        "example": 0
+                    },
+                    "forumId": {
+                        "type": "integer",
+                        "description": "Identifier of the forum containing this post.",
+                        "example": 0
+                    },
+                    "countryId": {
+                        "type": "integer",
+                        "description": "Identifier of the country where the post was made.",
+                        "example": 81
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "Language of the post content.",
+                        "example": "fa"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "Textual content of the post.",
+                        "example": "This is a sample post content."
+                    }
+                }
+            },
+            "Comment": {
+                "type": "object",
+                "description": "A comment posted by a user on a post or another comment.",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "Unique identifier of the comment.",
+                        "example": 1
+                    },
+                    "creationDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Timestamp when the comment was created.",
+                        "example": "2012-10-01T12:00:00Z"
+                    },
+                    "locationIP": {
+                        "type": "string",
+                        "description": "IP address of the user who created the comment.",
+                        "example": "91.191.192.127"
+                    },
+                    "browserUsed": {
+                        "type": "string",
+                        "description": "Browser used to post the comment.",
+                        "example": "Firefox"
+                    },
+                    "creatorPersonId": {
+                        "type": "integer",
+                        "description": "Identifier of the person who wrote the comment.",
+                        "example": 14
+                    },
+                    "parentPostId": {
+                        "type": "integer",
+                        "description": "Identifier of the post this comment replies to, if applicable.",
+                        "example": 0
+                    },
+                    "parentCommentId": {
+                        "type": "integer",
+                        "description": "Identifier of the comment this comment replies to, if applicable.",
+                        "example": 0
+                    },
+                    "length": {
+                        "type": "integer",
+                        "description": "Length of the comment in characters.",
+                        "example": 34
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "Textual content of the comment.",
+                        "example": "This is a sample comment content."
+                    },
+                    "countryId": {
+                        "type": "integer",
+                        "description": "Identifier of the country where the comment was posted.",
+                        "example": 4
+                    }
+                }
+            },
+            "Content": {
+                "type": "object",
+                "description": "A content posted by a user.",
+                "required": [
+                    "id",
+                    "creationDate",
+                    "type"
+                ],
+                "properties": {
+                    "creationDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Timestamp when the contant was created.",
+                        "example": "2012-10-01T12:00:00Z"
+                    },
+                    "id": {
+                        "type": "integer",
+                        "description": "Unique identifier.",
+                        "example": 1
+                    },
+                    "ContainerForumId": {
+                        "type": "number",
+                        "description": "The identifier of the forum where the content was posted.",
+                        "example": 0
+                    },
+                    "forumTitle": {
+                        "type": "string",
+                        "description": "The title of the forum where the content was posted.",
+                        "example": "General Discussion"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Type of content",
+                        "example": 4
+                    }
+                },
+                "content": {
+                    "type": "string",
+                    "description": "Textual content of the comment.",
+                    "example": "This is a sample comment content."
+                }
+            },
+            "PersonProfile": {
+                "type": "object",
+                "description": "Profile data of a user registered in the platform.",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "creationDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2020-01-01T12:00:00Z"
+                    },
+                    "firstName": {
+                        "type": "string",
+                        "example": "John"
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "example": "Doe"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "enum": [
+                            "male",
+                            "female",
+                            "other"
+                        ],
+                        "example": "male"
+                    },
+                    "birthday": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "1990-05-15T00:00:00Z"
+                    },
+                    "locationIP": {
+                        "type": "string",
+                        "example": "192.168.1.1"
+                    },
+                    "browserUsed": {
+                        "type": "string",
+                        "example": "Chrome"
+                    },
+                    "cityId": {
+                        "type": "integer",
+                        "example": 100
+                    },
+                    "language": {
+                        "type": "string",
+                        "example": "en"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "john.doe@example.com"
+                    }
+                }
+            },
+            "PersonName": {
+                "type": "object",
+                "description": "Basic name information of a person.",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Hossein"
+                    },
+                    "surname": {
+                        "type": "string",
+                        "example": "Forouhar"
+                    }
+                }
+            },
+            "ForumInfo": {
+                "type": "object",
+                "description": "Basic metadata about a forum.",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "creationDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2012-10-01T12:00:00Z"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "General Discussion"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "A forum for general topics and discussions."
+                    }
+                }
+            },
+            "ForumTitle": {
+                "type": "object",
+                "description": "Title of a forum or discussion wall.",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "example": "Wall of Hossein Forouhar"
+                    }
+                }
+            }
         }
-      },
-      "Comment": {
-        "type": "object",
-        "description": "A comment posted by a user on a post or another comment.",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "description": "Unique identifier of the comment.",
-            "example": 1
-          },
-          "creationDate": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Timestamp when the comment was created.",
-            "example": "2012-10-01T12:00:00Z"
-          },
-          "locationIP": {
-            "type": "string",
-            "description": "IP address of the user who created the comment.",
-            "example": "91.191.192.127"
-          },
-          "browserUsed": {
-            "type": "string",
-            "description": "Browser used to post the comment.",
-            "example": "Firefox"
-          },
-          "creatorPersonId": {
-            "type": "integer",
-            "description": "Identifier of the person who wrote the comment.",
-            "example": 14
-          },
-          "parentPostId": {
-            "type": "integer",
-            "description": "Identifier of the post this comment replies to, if applicable.",
-            "example": 0
-          },
-          "parentCommentId": {
-            "type": "integer",
-            "description": "Identifier of the comment this comment replies to, if applicable.",
-            "example": 0
-          },
-          "length": {
-            "type": "integer",
-            "description": "Length of the comment in characters.",
-            "example": 34
-          },
-          "content": {
-            "type": "string",
-            "description": "Textual content of the comment.",
-            "example": "This is a sample comment content."
-          },
-          "countryId": {
-            "type": "integer",
-            "description": "Identifier of the country where the comment was posted.",
-            "example": 4
-          }
-        }
-      },
-      "PersonProfile": {
-        "type": "object",
-        "description": "Profile data of a user registered in the platform.",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "example": 1
-          },
-          "creationDate": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2020-01-01T12:00:00Z"
-          },
-          "firstName": {
-            "type": "string",
-            "example": "John"
-          },
-          "lastName": {
-            "type": "string",
-            "example": "Doe"
-          },
-          "gender": {
-            "type": "string",
-            "enum": ["male", "female", "other"],
-            "example": "male"
-          },
-          "birthday": {
-            "type": "string",
-            "format": "date-time",
-            "example": "1990-05-15T00:00:00Z"
-          },
-          "locationIP": {
-            "type": "string",
-            "example": "192.168.1.1"
-          },
-          "browserUsed": {
-            "type": "string",
-            "example": "Chrome"
-          },
-          "cityId": {
-            "type": "integer",
-            "example": 100
-          },
-          "language": {
-            "type": "string",
-            "example": "en"
-          },
-          "email": {
-            "type": "string",
-            "example": "john.doe@example.com"
-          }
-        }
-      },
-      "PersonName": {
-        "type": "object",
-        "description": "Basic name information of a person.",
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Hossein"
-          },
-          "surname": {
-            "type": "string",
-            "example": "Forouhar"
-          }
-        }
-      },
-      "ForumInfo": {
-        "type": "object",
-        "description": "Basic metadata about a forum.",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "example": 1
-          },
-          "creationDate": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2012-10-01T12:00:00Z"
-          },
-          "title": {
-            "type": "string",
-            "example": "General Discussion"
-          },
-          "description": {
-            "type": "string",
-            "example": "A forum for general topics and discussions."
-          }
-        }
-      },
-      "ForumTitle": {
-        "type": "object",
-        "description": "Title of a forum or discussion wall.",
-        "properties": {
-          "title": {
-            "type": "string",
-            "example": "Wall of Hossein Forouhar"
-          }
-        }
-      }
     }
 }
-}
-
