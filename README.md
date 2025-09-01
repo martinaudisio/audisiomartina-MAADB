@@ -5,8 +5,8 @@ Web application for querying and analyzing the **LDBC Social Network Benchmark (
 
 ---
 
-## 📖 Description
-The MAADB project aims to simulate **typical social network queries** in a big data context, providing a scalable architecture that integrates:  
+## Description
+The social network explorer developed for the MADB assignment aims to simulate **typical social network queries** in a big data context, providing a scalable architecture that integrates:  
 
 - **Neo4j (graph database)** which is efficient for traversing social connections.  
 - **MongoDB (document database)** which is ideal for managing posts, messages, and semi-structured content.  
@@ -24,10 +24,7 @@ The application supports both **lookup queries** (e.g., list of friends, posts b
 - [Installation](#-installation)  
 - [Usage](#-usage)  
 - [API Documentation](#-api-documentation)  
-- [Repository Structure](#-repository-structure)  
-- [Contributing](#-contributing)  
-- [License](#-license)  
-- [References](#-references)  
+- [Repository Structure](#-repository-structure) 
 
 ---
 
@@ -69,8 +66,50 @@ The system follows a **modular and distributed architecture**:
 
 ---
 
-## 🛠 Installation
+## Installation
 Clone the repository:
 ```bash
 git clone https://github.com/martinaudisio/audisiomartina-MAADB.git
 cd audisiomartina-MAADB/solution
+```
+
+Install dependencies:
+```bash
+npm install
+```
+(Each service has its own package.json and dependencies)
+
+---
+
+## Usage
+Start the services:
+
+```bash
+node app.js
+```
+
+
+and for the react-client:
+
+```bash
+npm start
+```
+
+## API Documentation
+Interactive API documentation is available via Swagger:
+
+MongoDB API → http://localhost:3001/api-docs/
+
+Neo4j API → http://localhost:3002/api-docs/
+
+Gateway API → http://localhost:3003/api-docs/
+
+
+## Repository Structure
+In the directory solution/ you can find all the code to run. 
+solution/
+├── gateway/        # API Gateway
+├── neo4j-service/  # Graph queries service
+├── mongo-service/  # Document queries service
+└── react-client/   # Web client
+
