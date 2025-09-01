@@ -1,9 +1,15 @@
 import React from 'react';
 
 const PostByOrgResult = ({ content }) => {
-  if (!content || content.length === 0) {
+  // Debug log per vedere cosa arriva
+  console.log('PostByOrgResult content:', content);
+
+  // Modifica la condizione per essere più esplicita
+  if (!content || !Array.isArray(content) || content.length === 0) {
     return (
-      <div className="text-sm text-gray-500 p-4">Nessun post disponibile.</div>
+      <div className="text-red-600 font-bold p-4">
+        Nessun risultato trovato per questa organizzazione
+      </div>
     );
   }
 

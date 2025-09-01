@@ -238,6 +238,10 @@ export const getPostByCreatorOrganization = async (type, orgId, page, limit = 5)
 
   } catch (error) {
     console.error("Request error:", error);
-    return null;
+     return {
+        data: [],
+        hasSearched: true,
+        error: "Nessun dato disponibile"
+      };
   }
 };
