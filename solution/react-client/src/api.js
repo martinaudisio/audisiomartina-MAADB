@@ -50,7 +50,11 @@ export const getKnownPeopleById = async (id, page = 1, limit = 10) => {
 
   } catch (error) {
     console.error("Request error:", error);
-    return null;
+     return {
+        data: [],
+        hasSearched: true,
+        error: "Nessun dato disponibile"
+      };
   }
 };
 
@@ -85,7 +89,11 @@ export const getPostByPersonId = async (id, page, limit = 10) => {
 
   } catch (error) {
     console.error("Request error:", error);
-    return null;
+     return {
+        data: [],
+        hasSearched: true,
+        error: "Nessun dato disponibile"
+      };
   }
 };
 
@@ -122,7 +130,11 @@ export const getFOF = async (id, page, limit) => {
     };
   } catch (error) {
     console.error("Request error:", error);
-    return null;
+     return {
+        data: [],
+        hasSearched: true,
+        error: "Nessun dato disponibile"
+      };
   }
 };
 
@@ -155,7 +167,11 @@ export const getAvgResponseTime = async (id) => {
     return data;
   } catch (error) {
     console.error("Request error:", error);
-    return null;
+     return {
+        data: [],
+        hasSearched: true,
+        error: "Nessun dato disponibile"
+      };
   }
 };
 
@@ -182,8 +198,6 @@ export const getPeopleByTagAndLocation = async (tagId, locationId, page = 1, lim
       };
     }
 
-
-    // Gestione altri errori
     if (!response.ok) {
       const text = await response.text();
       throw new Error(text || "Server responded with an error");
@@ -199,7 +213,11 @@ export const getPeopleByTagAndLocation = async (tagId, locationId, page = 1, lim
 
   } catch (error) {
     console.error("Request error:", error);
-    return { error: error.message, data: [], hasSearched: true };
+     return {
+        data: [],
+        hasSearched: true,
+        error: "Nessun dato disponibile"
+      };
   }
 };
 
