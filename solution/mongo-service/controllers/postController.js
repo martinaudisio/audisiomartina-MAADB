@@ -1,4 +1,5 @@
-const Post = require('../models/post'); 
+const Post = require('../models/post');
+const Comment = require('../models/comment');
 const Forum = require('../models/forum');
 
 /**
@@ -10,7 +11,7 @@ const Forum = require('../models/forum');
 exports.getAllPosts = async (req, res) => {
   try {
     const posts = await Post.find();
-    
+
     res.status(200).json(posts);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving posts', error });
@@ -49,42 +50,133 @@ exports.getPostsByCreatorPersonId = async (req, res) => {
   try {
     console.log('Fetching posts for CreatorPersonId:', req.params.creatorPersonId);
     const posts = await Post.find({ CreatorPersonId: Number(req.params.creatorPersonId) })
-      .sort({ creationDate: -1 });  
+      .sort({ creationDate: -1 });
 
     if (posts.length === 0) {
       return res.status(404).json({ message: 'No posts found for this creator ID.' });
     }
 
-    
+
     const postsWithForumTitle = await Promise.all(posts.map(async (post) => {
-      const postObj = post.toObject();  
+      const postObj = post.toObject();
       if (!postObj.ContainerForumId) {
         return {
           ...postObj,
-          forumTitle: 'No forum associated',  
+          forumTitle: 'No forum associated',
         };
       }
       try {
-        const forum = await Forum.findOne({id: Number(postObj.ContainerForumId)});
+        const forum = await Forum.findOne({ id: Number(postObj.ContainerForumId) });
         return {
           ...postObj,
-          forumTitle: forum ? forum.title : 'Forum not found',  
+          forumTitle: forum ? forum.title : 'Forum not found',
         };
       } catch (err) {
         console.error('Error fetching forum:', err);
         return {
           ...postObj,
-          forumTitle: 'Error fetching forum',  
+          forumTitle: 'Error fetching forum',
         };
       }
     }));
 
-    res.status(200).json(postsWithForumTitle);  
+    res.status(200).json(postsWithForumTitle);
   } catch (error) {
     console.error('Error retrieving posts by creator:', error);
-    res.status(500).json({ message: 'Error retrieving posts by creator ID.'});
+    res.status(500).json({ message: 'Error retrieving posts by creator ID.' });
   }
 };
+
+/**
+ * Retrieves all content (posts and comments) created by a specific person, ordered by creation date.
+ * 
+ * @async
+ * @function getContentByCreatorPersonId
+ * @param {Object} req - Express request object
+ * @param {Object} req.params - Request parameters
+ * @param {string} req.params.creatorPersonId - The ID of the creator to fetch content for
+ * @param {Object} res - Express response object
+ * @returns {Promise<void>} - Sends JSON response with:
+ *   - Array of content objects sorted by creation date (descending)
+ *   - Each object contains:
+ *     - id: number
+ *     - creationDate: string (ISO date)
+ *     - content: string
+ *     - type: "Post" | "Comment"
+ *     - forumTitle: string (only for posts)
+ *     - ParentPostId: number (only for comments)
+ * @throws {Error} If database queries fail or other errors occur
+ */
+exports.getContentByCreatorPersonId = async (req, res) => {
+  const creatorPersonId = Number(req.params.creatorPersonId);
+
+  try {
+    const postResults = await Post.aggregate([
+      { $match: { CreatorPersonId: creatorPersonId } },
+      {
+        $project: {
+          _id: 0,
+          id: 1,
+          creationDate: 1,
+          content: 1,
+          ContainerForumId: 1,
+          type: { $literal: "Post" }
+        }
+      }
+    ]);
+
+    const commentResults = await Comment.aggregate([
+      { $match: { CreatorPersonId: creatorPersonId } },
+      {
+        $project: {
+          _id: 0,
+          id: 1,
+          creationDate: 1,
+          content: 1,
+          ParentPostId: 1,
+          type: { $literal: "Comment" }
+        }
+      }
+    ]);
+
+    if (postResults.length === 0 && commentResults.length === 0) {
+      return res.status(200).json([]);
+    }
+
+    const postsWithForumTitle = await Promise.all(postResults.map(async (post) => {
+      if (!post.ContainerForumId) {
+        return {
+          ...post,
+          forumTitle: 'No forum associated'
+        };
+      }
+
+      try {
+        const forum = await Forum.findOne({ id: Number(post.ContainerForumId) });
+        return {
+          ...post,
+          forumTitle: forum ? forum.title : 'Forum not found'
+        };
+      } catch (err) {
+        console.error('Error fetching forum:', err);
+        return {
+          ...post,
+          forumTitle: 'Error fetching forum'
+        };
+      }
+    }));
+
+    const results = [...postsWithForumTitle, ...commentResults];
+    results.sort((a, b) => new Date(b.creationDate) - new Date(a.creationDate));
+
+    res.status(200).json(results);
+
+  } catch (err) {
+    console.error("Error fetching content by creator:", err);
+    res.status(500).json({ message: "Error fetching content by creator ID." });
+  }
+};
+
 
 
 /**
@@ -129,7 +221,7 @@ exports.getPostsByCreatorAndDate = async (req, res) => {
     const dateThreshold = new Date(year, 0, 1);
 
     console.log('Fetching latest post for CreatorPersonId:', req.params.id);
-    const post = await Post.findOne({ 
+    const post = await Post.findOne({
       CreatorPersonId: Number(req.params.id),
       creationDate: { $gt: dateThreshold }
     }).sort({ creationDate: -1 });
@@ -156,7 +248,7 @@ exports.getPostsByCreatorAndDate = async (req, res) => {
     res.status(200).json([postObj]);
   } catch (error) {
     console.error('Error retrieving posts by creator:', error);
-    res.status(500).json({ message: 'Error retrieving posts by creatorID and date.'});
+    res.status(500).json({ message: 'Error retrieving posts by creatorID and date.' });
   }
 };
 
@@ -168,15 +260,15 @@ exports.getPostsByCreatorAndDate = async (req, res) => {
  * @param {number} containerForumId - The ID of the forum container to filter posts by.
  */
 exports.getPostsByForumId = async (req, res) => {
-    const { containerForumId } = req.params;
-    try {
-      const posts = await Post.find({ ContainerForumId: containerForumId });
-      if (posts.length === 0) {
-        return res.status(404).json({ message: 'No posts found for the specified forum ID.' });
-      }
-      res.status(200).json(posts);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Error occurred while retrieving posts by forum ID.' });
+  const { containerForumId } = req.params;
+  try {
+    const posts = await Post.find({ ContainerForumId: containerForumId });
+    if (posts.length === 0) {
+      return res.status(404).json({ message: 'No posts found for the specified forum ID.' });
     }
-  };
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error occurred while retrieving posts by forum ID.' });
+  }
+};
