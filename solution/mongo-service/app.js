@@ -19,7 +19,6 @@ const openApiDocumentation = require('./swagger/swaggerDocumentation.json')
  * Route handlers
  */
 const personRoutes = require('./routes/personRoutes'); 
-const forumRoutes = require('./routes/forumRoutes'); 
 const postRoutes = require('./routes/postRoutes'); 
 const commentRoutes = require('./routes/commentRoutes'); 
 
@@ -31,7 +30,6 @@ const app = express();
 app.use(cors());
 
 require('./models/person');
-require('./models/forum');
 require('./models/post');
 require('./models/comment');
 
@@ -56,7 +54,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/api/person', personRoutes);
-app.use('/api/forum', forumRoutes);
 app.use('/api/post', postRoutes);
 app.use('/api/comment', commentRoutes);
 /**
