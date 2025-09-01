@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -12,6 +13,10 @@
   "dependencies": {
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "neo4j-driver": "^5.28.1"
+    "neo4j-driver": "^5.28.1",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
   }
 }
