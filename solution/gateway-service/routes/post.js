@@ -22,94 +22,84 @@ const axios = require('axios');
  * @returns {Object} 500 - If an internal error occurs, returns an error message.
  */
 router.get('/creator/id', async (req, res) => {
-    const creatorId = req.query.id;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    console.log(`Fetching content IDs by creator ID ${creatorId}`);
+  const creatorId = req.query.id;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  console.log(`Fetching content by creator ID ${creatorId}`);
 
-    try {
-        // Get only IDs and types
-        const contentResponse = await axios.get(`http://localhost:3002/api/post/byUser/${creatorId}`);
-        const contents = contentResponse.data; // [{ contentId, type }]
-        console.log('Get only IDs and types:', contents);
-        if (!Array.isArray(contents) || contents.length === 0) {
-            return res.status(404).json({
-                data: [],
-                hasSearched: true,
-                error: 'Nessun dato disponibile'
-            });
-        }
-
-        let person;
-        try {
-            const personResponse = await axios.get(`http://localhost:3001/api/person/${creatorId}`);
-            person = personResponse.data;
-            console.log('Fetch person info:', person);
-        } catch (err) {
-            return res.status(404).json({
-                data: [],
-                hasSearched: true,
-                error: 'Creator not found'
-            });
-        }
-
-        const total = contents.length;
-        const startIndex = (page - 1) * limit;
-        const endIndex = startIndex + limit;
-        const paginatedContents = contents.slice(startIndex, endIndex);
-
-
-        // Fetch details for each content in parallel
-        const enrichedContents = await Promise.all(paginatedContents.map(async (content) => {
-            let contentDetails;
-            if (content.type === 'Post') {
-                // Get post details
-                const postRes = await axios.get(`http://localhost:3001/api/post/${content.id}`);
-                console.log('Fetch post info:', content.id);
-                contentDetails = postRes.data;
-
-                // Get forum title
-                try {
-                    const forumRes = await axios.get(`http://localhost:3002/api/post/ForumTitle/${content.id}`);
-                    contentDetails.forumTitle = forumRes.data || 'Unknown Forum';
-                } catch {
-                    contentDetails.forumTitle = 'Forum not found';
-                }
-            } else if (content.type === 'Comment') {
-                // Get comment details
-                const commentRes = await axios.get(`http://localhost:3001/api/comment/${content.id}`);
-                contentDetails = commentRes.data;
-
-                // Get parent post/replies
-                try {
-                    const parentRes = await axios.get(`http://localhost:3002/api/comment/replies/${content.id}`);
-                    contentDetails.parentPost = parentRes.data || {};
-                } catch {
-                    contentDetails.parentPost = { error: 'Parent post not found' };
-                }
-            }
-            return { ...content, ...contentDetails };
-        }));
-
-        res.status(200).json({
-            data: [{
-                creator: person,
-                content: enrichedContents
-            }],
-            pagination: {
-                page,
-                limit,
-                total,
-                totalPages: Math.ceil(total / limit),
-                hasNextPage: endIndex < total,
-                hasPrevPage: page > 1
-            },
-            hasSearched: true
-        });
-
-    } catch (err) {
-        res.status(500).json({ message: 'An error occurred while loading content by user ID.' });
+  try {
+    const response = await axios.get(`http://localhost:3001/api/post/content/${creatorId}`);
+    const contents = response.data;
+    if (contents.length === 0) {
+      return res.status(404).json({
+        data: [],
+        hasSearched: true,
+        error: 'Nessun dato disponibile'
+      });
     }
+
+    contents.sort((a, b) => new Date(b.creationDate) - new Date(a.creationDate));
+
+    
+    const total = contents.length;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedContents = contents.slice(startIndex, endIndex);
+
+
+    const enrichedContents = await Promise.all(
+      paginatedContents.map(async (content) => {
+
+        if (content.type === 'Comment') {
+          try {
+            const parentRes = await axios.get(
+              `http://localhost:3002/api/comment/replies/${content.id}`
+            );
+            return { ...content, parentPost: parentRes.data || {} };
+          } catch {
+            return { ...content, parentPost: { error: 'Parent post not found' } };
+          }
+        }
+
+        return content;
+      })
+    );
+
+    let person;
+    try {
+      const personResponse = await axios.get(`http://localhost:3001/api/person/${creatorId}`);
+      person = personResponse.data;
+    } catch {
+      return res.status(404).json({
+        data: [],
+        hasSearched: true,
+        error: 'Creator not found'
+      });
+    }
+
+
+    res.status(200).json({
+      data: [
+        {
+          creator: person,
+          content: enrichedContents
+        }
+      ],
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: endIndex < total,
+        hasPrevPage: page > 1
+      },
+      hasSearched: true
+    });
+
+  } catch (err) {
+    console.error('Error fetching content by creator ID:', err);
+    res.status(500).json({ message: 'An error occurred while loading content by user ID.' });
+  }
 });
 
 
