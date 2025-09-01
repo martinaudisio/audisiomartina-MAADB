@@ -85,81 +85,6 @@
         }
       }
     },
-    "/api/post/byUser/{userId}": {
-      "get": {
-        "summary": "Retrieve all contents IDs authored by a specific user",
-        "description": "Retrieves all content IDs and types created by a specific user.",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "The ID of the user."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A list of content created by the specified user ID. The object includes the content's id, type, and the content itself.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "$ref": "#/components/schemas/ContentItem"
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "No content found for the specified user ID."
-          },
-          "500": {
-            "description": "Error retrieving content for the user."
-          }
-        }
-      }
-    },
-    "/api/post/Forumtitle/{postId}": {
-      "get": {
-        "summary": "Retrieve the forum title for a specific post",
-        "description": "Retrieves the forum title to which the specified post belongs.",
-        "parameters": [
-          {
-            "name": "postId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "The ID of the post."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The forum title.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "$ref": "#/components/schemas/ForumTitleOnly"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "No forum found for the specified post ID."
-          },
-          "500": {
-            "description": "An error occurred while retrivingg the forum title."
-          }
-        }
-      }
-    },
     "/api/people/known/{id}": {
       "get": {
         "summary": "Retrieve people known by a user",
@@ -383,22 +308,6 @@
           }
         }
       },
-      "ContentItem": {
-        "type": "object",
-        "description": "Represents a generic content item, such as a post or a comment.",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "description": "Unique identifier of the content.",
-            "example": 893353197746
-          },
-          "type": {
-            "type": "string",
-            "description": "Type of content (e.g., Post, Comment).",
-            "example": "Post"
-          }
-        }
-      },
       "PersonBasic": {
         "type": "object",
         "description": "Basic identification information of a person.",
@@ -469,17 +378,6 @@
             "type": "integer",
             "description": "Year the person joined the organization.",
             "example": 2004
-          }
-        }
-      },
-      "ForumTitleOnly": {
-        "type": "object",
-        "description": "Contains only the title of a forum.",
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "Title of the forum.",
-            "example": "Wall of Hossein Forouhar"
           }
         }
       }
