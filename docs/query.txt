@@ -1,0 +1,21 @@
+Query di Lookup
+
+Lookup 1 (Neo4j):
+Dato l’ID di una persona, recuperare i suoi amici diretti (ID e nome) esplorando i nodi Person collegati tramite la relazione KNOWS.
+
+Lookup 2 (Cross-Database: Neo4j → MongoDB):
+Dato l’ID di una persona, identificare tutti i contenuti pubblicati (post e commenti) tramite MongoDB. Successivamente, attraverso l’integrazione dei due database, ottenere informazioni aggiuntive come il forum di appartenenza e i post padre associati ai commenti.
+
+Lookup 3 (Neo4j):
+Dato l’ID di un Tag e di un Place, individuare tutte le persone che risiedono in una specifica città o regione e che manifestano interesse verso il tag indicato, sfruttando le relazioni IS_LOCATED e HAS_INTEREST in Neo4j.
+
+Lookup 4 (Cross-Database: Neo4j → MongoDB):
+Dato l’ID di un’Organization, recuperare i contenuti dei post creati da persone che lavorano in una determinata azienda o studiano in una specifica università, ordinandoli per data di pubblicazione.
+
+Query Analitiche
+
+Analitica 1 (Neo4j):
+Dato l’ID di una persona, identificare tutti gli “amici di amici” (FoF) e calcolare il numero di amici in comune. La query permette di analizzare le amicizie di secondo grado e visualizzare la rete dei FoF in Neo4j.
+
+Analitica 2 (Cross-Database: Neo4j → MongoDB):
+Dato l’ID di una persona, calcolare il tempo medio di risposta ai messaggi ricevuti sfruttando la relazione replyOf, integrando informazioni tra Neo4j e MongoDB.
