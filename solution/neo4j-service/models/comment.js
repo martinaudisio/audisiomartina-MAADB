@@ -98,7 +98,7 @@ async function getOriginalMessageByComment(commentId) {
             data: {
                 originalId,
                 originalType,
-                id: originalId, // restituito come numero semplice
+                id: originalId,
                 content: original.content
 
             }
