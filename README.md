@@ -1,8 +1,6 @@
 # MAADB Project
 Web application for querying and analyzing the **LDBC Social Network Benchmark (SNB)** dataset using a **multi-database architecture** with **Neo4j** and **MongoDB**.  
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]() [![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
-
 ---
 
 ## Description
@@ -18,14 +16,15 @@ The application supports both **lookup queries** (e.g., list of friends, posts b
 ---
 
 ## Table of Contents
-- [Features](#-features)  
-- [Usage Example](#-usage-example)  
-- [Architecture](#-architecture)  
-- [Prerequisites](#-prerequisites)  
-- [Installation](#-installation)  
-- [Usage](#-usage)  
-- [API Documentation](#-api-documentation)  
-- [Repository Structure](#-repository-structure) 
+- [Features](#features)  
+- [Usage Examples](#usage-examples)  
+- [Architecture](#architecture)  
+- [Prerequisites](#prerequisites)  
+- [Installation](#installation)  
+- [Usage](#usage)  
+- [API Documentation](#api-documentation)  
+- [Repository Structure](#repository-structure)  
+
 
 ---
 
@@ -42,7 +41,6 @@ The application supports both **lookup queries** (e.g., list of friends, posts b
 
 
 ---
-
 
 ## Usage Examples
 
@@ -261,9 +259,3 @@ Gateway API → http://localhost:3003/api-docs/
 
 ## Repository Structure
 In the directory solution/ you can find all the code to run. 
-solution/
-├── gateway/        # API Gateway
-├── neo4j-service/  # Graph queries service
-├── mongo-service/  # Document queries service
-└── react-client/   # Web client
-
