@@ -1,3 +1,0 @@
-[submodule "ldbc_snb_datagen_spark"]
-	path = ldbc_snb_datagen_spark
-	url = https://github.com/ldbc/ldbc_snb_datagen_spark.git
