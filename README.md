@@ -210,10 +210,10 @@ The system follows a **modular and distributed architecture**:
 ---
 
 ## Prerequisites
-- **Node.js** (>= 18)  
-- **MongoDB** (>= 6.0)  
-- **Neo4j** (>= 5.0)  
-- **npm** (>= 9.0)  
+- **Node.js** 
+- **MongoDB** 
+- **Neo4j** 
+- **npm** 
 - [LDBC Datagen Spark](https://github.com/ldbc/ldbc_snb_datagen_spark) to generate dataset.  
 
 ---
@@ -224,14 +224,6 @@ Clone the repository:
 git clone https://github.com/martinaudisio/audisiomartina-MAADB.git
 cd audisiomartina-MAADB/solution
 ```
-
-Install dependencies:
-```bash
-npm install
-```
-(Each service has its own package.json and dependencies)
-
----
 
 ## Usage
 Start the services:
