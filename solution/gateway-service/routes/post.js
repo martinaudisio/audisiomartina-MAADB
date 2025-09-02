@@ -147,12 +147,6 @@ router.get('/byOrganization/:type/:orgId', async (req, res) => {
             });
         }
 
-        const total = peopleData.length;
-        const startIndex = (page - 1) * limit;
-        const endIndex = startIndex + limit;
-        const paginatedPeople = peopleData.slice(startIndex, endIndex);
-
-
         const peopleWithPosts = await Promise.all(
             peopleData.map(async (person) => {
                 const { id, since } = person;
@@ -175,8 +169,14 @@ router.get('/byOrganization/:type/:orgId', async (req, res) => {
             })
         );
 
+
+         const total = peopleWithPosts.length;
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedPeople = peopleWithPosts.slice(startIndex, endIndex);
+
         res.status(200).json({
-            data: peopleWithPosts,
+            data: paginatedPeople,
             pagination: {
                 page,
                 limit,
