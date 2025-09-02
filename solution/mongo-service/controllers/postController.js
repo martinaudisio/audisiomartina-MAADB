@@ -29,16 +29,24 @@ exports.getContentByCreatorPersonId = async (req, res) => {
     const postResults = await Post.aggregate([
       { $match: { CreatorPersonId: creatorPersonId } },
       {
+        $lookup: {
+          from: "forum",
+          localField: "ContainerForumId",
+          foreignField: "id",
+          as: "forum"
+        }
+      },
+      {
         $project: {
-          _id: 0,
           id: 1,
           creationDate: 1,
           content: 1,
-          ContainerForumId: 1,
-          type: { $literal: "Post" }
+          type: { $literal: "Post" },
+          forumTitle: { $ifNull: [{ $arrayElemAt: ["$forum.title", 0] }, "Forum not found"] }
         }
       }
     ]);
+
 
     const commentResults = await Comment.aggregate([
       { $match: { CreatorPersonId: creatorPersonId } },
@@ -58,30 +66,9 @@ exports.getContentByCreatorPersonId = async (req, res) => {
       return res.status(200).json([]);
     }
 
-    const postsWithForumTitle = await Promise.all(postResults.map(async (post) => {
-      if (!post.ContainerForumId) {
-        return {
-          ...post,
-          forumTitle: 'No forum associated'
-        };
-      }
 
-      try {
-        const forum = await Forum.findOne({ id: Number(post.ContainerForumId) });
-        return {
-          ...post,
-          forumTitle: forum ? forum.title : 'Forum not found'
-        };
-      } catch (err) {
-        console.error('Error fetching forum:', err);
-        return {
-          ...post,
-          forumTitle: 'Error fetching forum'
-        };
-      }
-    }));
 
-    const results = [...postsWithForumTitle, ...commentResults];
+    const results = [...postResults, ...commentResults];
     results.sort((a, b) => new Date(b.creationDate) - new Date(a.creationDate));
 
     res.status(200).json(results);
@@ -115,32 +102,47 @@ exports.getPostsByCreatorAndDate = async (req, res) => {
     const year = Number(req.params.year);
     const dateThreshold = new Date(year, 0, 1);
 
-    console.log('Fetching latest post for CreatorPersonId:', req.params.id);
-    const post = await Post.findOne({
-      CreatorPersonId: Number(req.params.id),
-      creationDate: { $gt: dateThreshold }
-    }).sort({ creationDate: -1 });
 
-    // Se non c'è nessun post, restituisci array vuoto
-    if (!post) {
+    console.log('Fetching latest post for CreatorPersonId:', req.params.id);
+    const posts = await Post.aggregate([
+      {
+        $match: {
+          CreatorPersonId: Number(req.params.id),
+          creationDate: { $gt: dateThreshold }
+        }
+      },
+      { $sort: { creationDate: -1 } },
+      { $limit: 1 },
+      {
+        $lookup: {
+          from: "forum",
+          localField: "ContainerForumId",
+          foreignField: "id",
+          as: "forum"
+        }
+      },
+      {
+        $addFields: {
+          forumTitle: {
+            $ifNull: [{ $arrayElemAt: ["$forum.title", 0] }, "Forum not found"]
+          }
+        }
+      },
+      {
+        $project: {
+          forum: 0
+        }
+      }
+    ]);
+
+
+    if (!posts || posts.length === 0) {
       return res.status(200).json([]);
     }
 
-    let forumTitle = 'No forum associated';
-    if (post.ContainerForumId) {
-      try {
-        const forum = await Forum.findOne({ id: Number(post.ContainerForumId) });
-        forumTitle = forum ? forum.title : 'Forum not found';
-      } catch (err) {
-        console.error('Error fetching forum:', err);
-        forumTitle = 'Error fetching forum';
-      }
-    }
+    res.status(200).json(posts);
 
-    const postObj = post.toObject();
-    postObj.forumTitle = forumTitle;
 
-    res.status(200).json([postObj]);
   } catch (error) {
     console.error('Error retrieving posts by creator:', error);
     res.status(500).json({ message: 'Error retrieving posts by creatorID and date.' });
