@@ -4,7 +4,7 @@ Web application for querying and analyzing the **LDBC Social Network Benchmark (
 ---
 
 ## Description
-The social network explorer developed for the MADB assignment aims to simulate **typical social network queries** in a big data context, providing a scalable architecture that integrates:  
+The social network explorer developed for the MAADB assignment aims to simulate **typical social network queries** in a big data context, providing a scalable architecture that integrates:  
 
 - **Neo4j (graph database)** which is efficient for traversing social connections.  
 - **MongoDB (document database)** which is ideal for managing posts, messages, and semi-structured content.  
@@ -69,7 +69,7 @@ User ID = `14`
   }
 ```
 
-#### Example 2: Retrieve all content posted by a user 
+#### Example 2: Get content posted by a user
 **Input**:  
 User ID = `14`
 
@@ -100,7 +100,7 @@ User ID = `14`
 ```
 
 
-#### Example 3: Retrieve people by location and tag
+#### Example 3: Find users by location and interests
 **Input**:  
 Location ID = `411`
 Tag ID = `1187`
@@ -114,7 +114,7 @@ Tag ID = `1187`
 }
 ```
 
-#### Example 4: Retrieve post by creator's organization
+#### Example 4: Retrieve posts from users linked to an organization
 **Input**:  
 Type = `University`
 Organization ID = `3010`
@@ -147,7 +147,7 @@ Organization ID = `3010`
 
 ### Analytical Queries
 
-#### Example 1: Retrieve friend of frinds of a user
+#### Example 1: Calculate friends-of-friends of a user
 **Input**:  
 User ID = `14`
 
