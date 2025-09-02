@@ -19,6 +19,7 @@ The application supports both **lookup queries** (e.g., list of friends, posts b
 
 ## Table of Contents
 - [Features](#-features)  
+- [Usage Example](#-usage-example)  
 - [Architecture](#-architecture)  
 - [Prerequisites](#-prerequisites)  
 - [Installation](#-installation)  
@@ -38,6 +39,159 @@ The application supports both **lookup queries** (e.g., list of friends, posts b
 - **Analytical queries**:  
   - Calculate friends-of-friends (FoF) and mutual friends.  
   - Compute average response time to posts/comments (**cross-database**).  
+
+
+---
+
+
+## Usage Examples
+
+### Lookup Queries
+
+#### Example 1: Retrieve direct friends of a user
+**Input**:  
+User ID = `14`
+
+**Output**:
+```json
+  {
+    "name": "Ina",
+    "surname": "Barbu",
+    "id": 32985348837827
+  },
+  {
+    "name": "Daniil",
+    "surname": "Ivanov",
+    "id": 35184372091452
+  },
+  {
+    "name": "Gheorghe",
+    "surname": "Popescu",
+    "id": 2199023264850
+  }
+```
+
+#### Example 2: Retrieve all content posted by a user 
+**Input**:  
+User ID = `14`
+
+**Output**:
+```json
+{
+    "creator": {
+      "firstName": "Hossein",
+      "lastName": "Forouhar"
+    },
+    "content": [
+      {
+        "_id": "689b19acea0a11f5c0c9b7a8",
+        "creationDate": "2012-11-24T20:01:05.220Z",
+        "id": 2336462209295,
+        "type": "Post",
+        "forumTitle": "Album 21 of Hossein Forouhar"
+      },
+      {
+        "_id": "689b19acea0a11f5c0c9b7a7",
+        "creationDate": "2012-11-24T20:01:04.220Z",
+        "id": 2336462209294,
+        "type": "Post",
+        "forumTitle": "Album 21 of Hossein Forouhar"
+      }
+    ]
+}
+```
+
+
+#### Example 3: Retrieve people by location and tag
+**Input**:  
+Location ID = `411`
+Tag ID = `1187`
+
+**Output**:
+```json
+{
+    "id": 21990232555526,
+    "name": "Baby",
+    "surname": "Yang"
+}
+```
+
+#### Example 4: Retrieve post by creator's organization
+**Input**:  
+Type = `University`
+Organization ID = `3010`
+
+**Output**:
+```json
+  {
+    "id": 381,
+    "name": "John",
+    "surname": "Sharma",
+    "since": 2003,
+    "posts": [
+      {
+        "_id": "689b1a2dea0a11f5c0da77fc",
+        "creationDate": "2012-10-05T07:15:51.745Z",
+        "id": 2199024421139,
+        "locationIP": "14.1.120.230",
+        "browserUsed": "Chrome",
+        "language": "en",
+        "content": "About Francis I of the Two Sicilies; he Two Sicilies frAbout Red Red Wine;  of the song",
+        "length": 88,
+        "CreatorPersonId": 381,
+        "ContainerForumId": 1649268493805,
+        "LocationCountryId": 0,
+        "forumTitle": "Group for Percy_Bysshe_Shelley in Comrat"
+      }
+    ]
+  }
+```
+
+### Analytical Queries
+
+#### Example 1: Retrieve friend of frinds of a user
+**Input**:  
+User ID = `14`
+
+**Output**:
+```json
+  {
+      "id": 28587302323380,
+      "name": "Alexander",
+      "surname": "Hleb",
+      "mutualFriends": 5
+    },
+    {
+      "id": 35184372090558,
+      "name": "John",
+      "surname": "Ali",
+      "mutualFriends": 5
+    },
+    {
+      "id": 28587302324006,
+      "name": "Mohammad",
+      "surname": "Forouhar",
+      "mutualFriends": 5
+    }
+```
+
+#### Example 2: Retrieve average response time of a user
+**Input**:  
+User ID = `14`
+
+**Output**:
+```json
+{
+  "averageReplyTimeSeconds": 5859511.28,
+  "formatted": {
+    "days": 67,
+    "hours": 19,
+    "minutes": 38,
+    "seconds": 31
+  }
+}
+```
+
 
 ---
 
