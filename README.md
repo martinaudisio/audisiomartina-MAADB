@@ -220,18 +220,35 @@ The system follows a **modular and distributed architecture**:
 
 ## Installation
 Clone the repository:
+
 ```bash
 git clone https://github.com/martinaudisio/audisiomartina-MAADB.git
 cd audisiomartina-MAADB/solution
 ```
 
+Install required packages for each server.
+
+```bash
+cd gateway-service
+npm install
+
+cd ../mongo-service
+npm install
+
+cd ../neo4j-service
+npm install
+
+cd ../react-client
+npm install
+```
+
 ## Usage
+Before starting the servers, populate the database with the required data, generated with LDBC Datagen Spark(scale factor 1).
 Start the services:
 
 ```bash
 node app.js
 ```
-
 
 and for the react-client:
 
