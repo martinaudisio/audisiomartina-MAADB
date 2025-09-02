@@ -661,11 +661,13 @@
             "properties": {
               "firstName": {
                 "type": "string",
-                "description": "The creator's first name."
+                "description": "The creator's first name.", 
+                "example": "Hossein"
               },
               "lastName": {
                 "type": "string",
-                "description": "The creator's last name."
+                "description": "The creator's last name.", 
+                "example": "Forouhar"
               }
             },
             "required": [
